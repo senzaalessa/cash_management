@@ -1,1 +1,654 @@
+{
+  "api_name": "Cash Management API",
+  "authors": "Falzetta Christian, Latini Mattia, Senzacqua Alessandro",
+  "base_url": "http://localhost/cash_management",
+  "version": "1.0.0",
+  "auth_type": "Bearer Token",
+  "note": "Tutti i body devono avere Content-Type: application/json. Gli endpoint contrassegnati con [AUTH] richiedono l'header Authorization: Bearer <token>",
 
+  "endpoints": {
+
+    "auth": {
+
+      "register": {
+        "method": "POST",
+        "url": "/auth/register",
+        "description": "Registra un nuovo utente",
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "request_body": {
+          "username": "Mario",
+          "email": "mario@example.com",
+          "password": "password123"
+        },
+        "response_success": {
+          "success": true,
+          "message": "Registrazione completata con successo",
+          "data": {
+            "token": "a3f8c2e1d9b047f6a2c8e5d1b0a7f3c9e2d8b1a4f7c0e3d6b9a2f5c8e1d4b7",
+            "expires_at": "2026-05-15 14:30:00",
+            "user": {
+              "id": 1,
+              "username": "Mario",
+              "email": "mario@example.com"
+            }
+          }
+        },
+        "response_error_duplicate": {
+          "success": false,
+          "message": "Email o username già in uso"
+        },
+        "response_error_validation": {
+          "success": false,
+          "message": "Campi obbligatori mancanti: email, password"
+        }
+      },
+
+      "login": {
+        "method": "POST",
+        "url": "/auth/login",
+        "description": "Esegue il login e restituisce un Bearer Token",
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "request_body": {
+          "email": "mario@example.com",
+          "password": "password123"
+        },
+        "response_success": {
+          "success": true,
+          "message": "Login effettuato con successo",
+          "data": {
+            "token": "a3f8c2e1d9b047f6a2c8e5d1b0a7f3c9e2d8b1a4f7c0e3d6b9a2f5c8e1d4b7",
+            "expires_at": "2026-05-15 14:30:00",
+            "user": {
+              "id": 1,
+              "username": "Mario",
+              "email": "mario@example.com"
+            }
+          }
+        },
+        "response_error": {
+          "success": false,
+          "message": "Credenziali non valide"
+        }
+      },
+
+      "logout": {
+        "method": "POST",
+        "url": "/auth/logout",
+        "description": "[AUTH] Invalida il token corrente",
+        "headers": {
+          "Content-Type": "application/json",
+          "Authorization": "Bearer a3f8c2e1d9b047f6a2c8e5d1b0a7f3c9e2d8b1a4f7c0e3d6b9a2f5c8e1d4b7"
+        },
+        "request_body": null,
+        "response_success": {
+          "success": true,
+          "message": "Logout effettuato con successo"
+        }
+      },
+
+      "me": {
+        "method": "GET",
+        "url": "/auth/me",
+        "description": "[AUTH] Restituisce i dati dell'utente autenticato",
+        "headers": {
+          "Authorization": "Bearer a3f8c2e1d9b047f6a2c8e5d1b0a7f3c9e2d8b1a4f7c0e3d6b9a2f5c8e1d4b7"
+        },
+        "request_body": null,
+        "response_success": {
+          "success": true,
+          "message": "Operazione completata",
+          "data": {
+            "id": 1,
+            "username": "Mario",
+            "email": "mario@example.com"
+          }
+        },
+        "response_error_unauthorized": {
+          "success": false,
+          "message": "Token non valido o scaduto. Esegui di nuovo il login."
+        }
+      }
+    },
+
+    "expenses": {
+
+      "list": {
+        "method": "GET",
+        "url": "/expenses",
+        "description": "[AUTH] Lista delle spese con filtri opzionali",
+        "headers": {
+          "Authorization": "Bearer <token>"
+        },
+        "query_params": {
+          "month": "2026-05",
+          "category_id": 1,
+          "search": "supermercato",
+          "page": 1,
+          "per_page": 20
+        },
+        "url_examples": [
+          "/expenses",
+          "/expenses?month=2026-05",
+          "/expenses?category_id=1",
+          "/expenses?search=pizza",
+          "/expenses?month=2026-05&category_id=2&page=1&per_page=10"
+        ],
+        "request_body": null,
+        "response_success": {
+          "success": true,
+          "message": "Operazione completata",
+          "data": {
+            "expenses": [
+              {
+                "id": 3,
+                "amount": 45.50,
+                "description": "Spesa supermercato",
+                "date": "2026-05-10",
+                "notes": "Acquisti settimanali",
+                "created_at": "2026-05-10 14:15:00",
+                "category": {
+                  "id": 1,
+                  "name": "Alimentari",
+                  "icon": "🛒",
+                  "color": "#4CAF50"
+                }
+              },
+              {
+                "id": 2,
+                "amount": 22.00,
+                "description": "Abbonamento autobus mensile",
+                "date": "2026-05-01",
+                "notes": null,
+                "created_at": "2026-05-01 15:00:00",
+                "category": {
+                  "id": 2,
+                  "name": "Trasporti",
+                  "icon": "🚗",
+                  "color": "#2196F3"
+                }
+              }
+            ],
+            "pagination": {
+              "total": 27,
+              "page": 1,
+              "per_page": 20,
+              "pages": 2
+            }
+          }
+        }
+      },
+
+      "create": {
+        "method": "POST",
+        "url": "/expenses",
+        "description": "[AUTH] Crea una nuova spesa",
+        "headers": {
+          "Content-Type": "application/json",
+          "Authorization": "Bearer <token>"
+        },
+        "request_body": {
+          "amount": 45.50,
+          "description": "Spesa supermercato",
+          "category_id": 1,
+          "expense_date": "2026-05-10",
+          "notes": "Acquisti settimanali (facoltativo)"
+        },
+        "response_success": {
+          "success": true,
+          "message": "Spesa aggiunta con successo",
+          "data": {
+            "id": 3,
+            "amount": 45.50,
+            "description": "Spesa supermercato",
+            "date": "2026-05-10",
+            "notes": "Acquisti settimanali (facoltativo)",
+            "created_at": "2026-05-10 14:15:00",
+            "category": {
+              "id": 1,
+              "name": "Alimentari",
+              "icon": "🛒",
+              "color": "#4CAF50"
+            }
+          }
+        },
+        "response_error_validation": {
+          "success": false,
+          "message": "Campi obbligatori mancanti: description, expense_date"
+        },
+        "response_error_amount": {
+          "success": false,
+          "message": "L'importo deve essere un numero positivo"
+        }
+      },
+
+      "get_single": {
+        "method": "GET",
+        "url": "/expenses/{id}",
+        "url_example": "/expenses/3",
+        "description": "[AUTH] Dettaglio di una singola spesa",
+        "headers": {
+          "Authorization": "Bearer <token>"
+        },
+        "request_body": null,
+        "response_success": {
+          "success": true,
+          "message": "Operazione completata",
+          "data": {
+            "id": 3,
+            "amount": 45.50,
+            "description": "Spesa supermercato",
+            "date": "2026-05-10",
+            "notes": "Acquisti settimanali",
+            "created_at": "2026-05-10 14:15:00",
+            "category": {
+              "id": 1,
+              "name": "Alimentari",
+              "icon": "🛒",
+              "color": "#4CAF50"
+            }
+          }
+        },
+        "response_error_not_found": {
+          "success": false,
+          "message": "Spesa non trovata"
+        }
+      },
+
+      "update": {
+        "method": "PUT",
+        "url": "/expenses/{id}",
+        "url_example": "/expenses/3",
+        "description": "[AUTH] Aggiorna una spesa (solo i campi inviati vengono modificati)",
+        "headers": {
+          "Content-Type": "application/json",
+          "Authorization": "Bearer <token>"
+        },
+        "request_body": {
+          "amount": 50.00,
+          "description": "Spesa supermercato (aggiornata)",
+          "category_id": 1,
+          "expense_date": "2026-05-10",
+          "notes": "Nota aggiornata"
+        },
+        "response_success": {
+          "success": true,
+          "message": "Spesa aggiornata con successo",
+          "data": {
+            "id": 3,
+            "amount": 50.00,
+            "description": "Spesa supermercato (aggiornata)",
+            "date": "2026-05-10",
+            "notes": "Nota aggiornata",
+            "created_at": "2026-05-10 14:15:00",
+            "category": {
+              "id": 1,
+              "name": "Alimentari",
+              "icon": "🛒",
+              "color": "#4CAF50"
+            }
+          }
+        }
+      },
+
+      "delete": {
+        "method": "DELETE",
+        "url": "/expenses/{id}",
+        "url_example": "/expenses/3",
+        "description": "[AUTH] Elimina una spesa",
+        "headers": {
+          "Authorization": "Bearer <token>"
+        },
+        "request_body": null,
+        "response_success": {
+          "success": true,
+          "message": "Spesa eliminata con successo"
+        },
+        "response_error_not_found": {
+          "success": false,
+          "message": "Spesa non trovata"
+        }
+      }
+    },
+
+    "categories": {
+
+      "list": {
+        "method": "GET",
+        "url": "/categories",
+        "description": "[AUTH] Lista di tutte le categorie disponibili",
+        "headers": {
+          "Authorization": "Bearer <token>"
+        },
+        "request_body": null,
+        "response_success": {
+          "success": true,
+          "message": "Operazione completata",
+          "data": [
+            { "id": 1,  "name": "Alimentari",     "icon": "🛒", "color": "#4CAF50" },
+            { "id": 2,  "name": "Trasporti",       "icon": "🚗", "color": "#2196F3" },
+            { "id": 3,  "name": "Salute",          "icon": "💊", "color": "#F44336" },
+            { "id": 4,  "name": "Intrattenimento", "icon": "🎬", "color": "#9C27B0" },
+            { "id": 5,  "name": "Abbigliamento",   "icon": "👕", "color": "#FF9800" },
+            { "id": 6,  "name": "Casa",            "icon": "🏠", "color": "#795548" },
+            { "id": 7,  "name": "Ristorante",      "icon": "🍽️", "color": "#FF5722" },
+            { "id": 8,  "name": "Viaggi",          "icon": "✈️", "color": "#00BCD4" },
+            { "id": 9,  "name": "Sport",           "icon": "⚽", "color": "#8BC34A" },
+            { "id": 10, "name": "Altro",           "icon": "📌", "color": "#607D8B" }
+          ]
+        }
+      }
+    },
+
+    "stats": {
+
+      "summary": {
+        "method": "GET",
+        "url": "/stats/summary",
+        "url_example": "/stats/summary?year=2026",
+        "description": "[AUTH] Riepilogo finanziario dell'anno",
+        "headers": {
+          "Authorization": "Bearer <token>"
+        },
+        "query_params": {
+          "year": 2026
+        },
+        "request_body": null,
+        "response_success": {
+          "success": true,
+          "message": "Operazione completata",
+          "data": {
+            "year": 2026,
+            "year_total": 1284.75,
+            "current_month_total": 312.40,
+            "current_month_count": 14,
+            "avg_monthly": 214.12
+          }
+        }
+      },
+
+      "monthly": {
+        "method": "GET",
+        "url": "/stats/monthly",
+        "url_example": "/stats/monthly?year=2026",
+        "description": "[AUTH] Totali mensili di un anno",
+        "headers": {
+          "Authorization": "Bearer <token>"
+        },
+        "query_params": {
+          "year": 2026
+        },
+        "request_body": null,
+        "response_success": {
+          "success": true,
+          "message": "Operazione completata",
+          "data": {
+            "year": 2026,
+            "months": [
+              { "month": "2026-01", "total": 198.50, "count": 9 },
+              { "month": "2026-02", "total": 234.00, "count": 11 },
+              { "month": "2026-03", "total": 189.85, "count": 8 },
+              { "month": "2026-04", "total": 312.40, "count": 14 }
+            ]
+          }
+        }
+      },
+
+      "by_category": {
+        "method": "GET",
+        "url": "/stats/category",
+        "url_example": "/stats/category?month=2026-05",
+        "description": "[AUTH] Totale spese per categoria in un determinato mese",
+        "headers": {
+          "Authorization": "Bearer <token>"
+        },
+        "query_params": {
+          "month": "2026-05"
+        },
+        "request_body": null,
+        "response_success": {
+          "success": true,
+          "message": "Operazione completata",
+          "data": {
+            "month": "2026-05",
+            "categories": [
+              {
+                "category": { "id": 1, "name": "Alimentari", "icon": "🛒", "color": "#4CAF50" },
+                "total": 142.30,
+                "count": 6
+              },
+              {
+                "category": { "id": 7, "name": "Ristorante", "icon": "🍽️", "color": "#FF5722" },
+                "total": 88.50,
+                "count": 4
+              },
+              {
+                "category": { "id": 2, "name": "Trasporti", "icon": "🚗", "color": "#2196F3" },
+                "total": 45.00,
+                "count": 2
+              },
+              {
+                "category": { "id": 4, "name": "Intrattenimento", "icon": "🎬", "color": "#9C27B0" },
+                "total": 36.60,
+                "count": 2
+              },
+              {
+                "category": { "id": 3, "name": "Salute", "icon": "💊", "color": "#F44336" },
+                "total": 0,
+                "count": 0
+              }
+            ]
+          }
+        }
+      }
+    }
+  },
+
+    "incomes": {
+
+      "list": {
+        "method": "GET",
+        "url": "/incomes",
+        "description": "[AUTH] Lista delle entrate con filtri opzionali",
+        "headers": { "Authorization": "Bearer <token>" },
+        "query_params": { "month": "2026-05", "category_id": 1, "search": "stipendio", "page": 1, "per_page": 20 },
+        "url_examples": [
+          "/incomes",
+          "/incomes?month=2026-05",
+          "/incomes?category_id=1",
+          "/incomes?search=stipendio&month=2026-05"
+        ],
+        "response_success": {
+          "success": true,
+          "message": "Operazione completata",
+          "data": {
+            "incomes": [
+              {
+                "id": 1,
+                "amount": 1800.00,
+                "description": "Stipendio aprile",
+                "date": "2026-05-27",
+                "notes": null,
+                "created_at": "2026-05-27 14:00:00",
+                "category": { "id": 1, "name": "Stipendio", "icon": "💼", "color": "#5cc9a0" }
+              },
+              {
+                "id": 2,
+                "amount": 350.00,
+                "description": "Progetto freelance web",
+                "date": "2026-05-15",
+                "notes": "Cliente Rossi SRL",
+                "created_at": "2026-05-15 14:30:00",
+                "category": { "id": 2, "name": "Freelance", "icon": "💻", "color": "#4CAF50" }
+              }
+            ],
+            "pagination": { "total": 5, "page": 1, "per_page": 20, "pages": 1 }
+          }
+        }
+      },
+
+      "create": {
+        "method": "POST",
+        "url": "/incomes",
+        "description": "[AUTH] Registra una nuova entrata",
+        "headers": { "Content-Type": "application/json", "Authorization": "Bearer <token>" },
+        "request_body": {
+          "amount": 1800.00,
+          "description": "Stipendio aprile",
+          "category_id": 1,
+          "income_date": "2026-05-27",
+          "notes": "Accreditato il 27"
+        },
+        "response_success": {
+          "success": true,
+          "message": "Entrata aggiunta con successo",
+          "data": {
+            "id": 1,
+            "amount": 1800.00,
+            "description": "Stipendio aprile",
+            "date": "2026-05-27",
+            "notes": "Accreditato il 27",
+            "created_at": "2026-05-27 14:00:00",
+            "category": { "id": 1, "name": "Stipendio", "icon": "💼", "color": "#5cc9a0" }
+          }
+        }
+      },
+
+      "get_single": {
+        "method": "GET",
+        "url": "/incomes/{id}",
+        "url_example": "/incomes/1",
+        "description": "[AUTH] Dettaglio di una singola entrata",
+        "headers": { "Authorization": "Bearer <token>" },
+        "response_success": {
+          "success": true,
+          "message": "Operazione completata",
+          "data": {
+            "id": 1,
+            "amount": 1800.00,
+            "description": "Stipendio aprile",
+            "date": "2026-05-27",
+            "notes": null,
+            "created_at": "2026-05-27 14:00:00",
+            "category": { "id": 1, "name": "Stipendio", "icon": "💼", "color": "#5cc9a0" }
+          }
+        }
+      },
+
+      "update": {
+        "method": "PUT",
+        "url": "/incomes/{id}",
+        "url_example": "/incomes/1",
+        "description": "[AUTH] Aggiorna una entrata (solo i campi inviati vengono modificati)",
+        "headers": { "Content-Type": "application/json", "Authorization": "Bearer <token>" },
+        "request_body": { "amount": 1850.00, "notes": "Bonus incluso" },
+        "response_success": {
+          "success": true,
+          "message": "Entrata aggiornata con successo",
+          "data": {
+            "id": 1,
+            "amount": 1850.00,
+            "description": "Stipendio aprile",
+            "date": "2026-05-27",
+            "notes": "Bonus incluso",
+            "created_at": "2026-05-27 14:00:00",
+            "category": { "id": 1, "name": "Stipendio", "icon": "💼", "color": "#5cc9a0" }
+          }
+        }
+      },
+
+      "delete": {
+        "method": "DELETE",
+        "url": "/incomes/{id}",
+        "url_example": "/incomes/1",
+        "description": "[AUTH] Elimina una entrata",
+        "headers": { "Authorization": "Bearer <token>" },
+        "response_success": { "success": true, "message": "Entrata eliminata con successo" }
+      }
+    },
+
+    "income_categories": {
+      "list": {
+        "method": "GET",
+        "url": "/income-categories",
+        "description": "[AUTH] Lista categorie per le entrate",
+        "headers": { "Authorization": "Bearer <token>" },
+        "response_success": {
+          "success": true,
+          "message": "Operazione completata",
+          "data": [
+            { "id": 1, "name": "Stipendio",    "icon": "💼", "color": "#5cc9a0" },
+            { "id": 2, "name": "Freelance",    "icon": "💻", "color": "#4CAF50" },
+            { "id": 3, "name": "Affitto",      "icon": "🏠", "color": "#8BC34A" },
+            { "id": 4, "name": "Investimenti", "icon": "📈", "color": "#00BCD4" },
+            { "id": 5, "name": "Regalo",       "icon": "🎁", "color": "#9C27B0" },
+            { "id": 6, "name": "Rimborso",     "icon": "↩️", "color": "#FF9800" },
+            { "id": 7, "name": "Altro",        "icon": "💰", "color": "#607D8B" }
+          ]
+        }
+      }
+    }
+  },
+
+  "stats_with_income": {
+    "summary_updated": {
+      "method": "GET",
+      "url": "/stats/summary?year=2026",
+      "description": "[AUTH] Riepilogo con entrate, spese e saldo",
+      "response_success": {
+        "success": true,
+        "message": "Operazione completata",
+        "data": {
+          "year": 2026,
+          "current_month": "2026-05",
+          "month_expenses": 312.40,
+          "month_incomes": 2150.00,
+          "month_balance": 1837.60,
+          "month_expense_count": 14,
+          "month_income_count": 2,
+          "year_expenses": 1284.75,
+          "year_incomes": 7200.00,
+          "year_balance": 5915.25,
+          "avg_monthly_expenses": 321.19,
+          "avg_monthly_incomes": 1800.00
+        }
+      }
+    },
+
+    "monthly_updated": {
+      "method": "GET",
+      "url": "/stats/monthly?year=2026",
+      "description": "[AUTH] Confronto mensile entrate vs spese",
+      "response_success": {
+        "success": true,
+        "message": "Operazione completata",
+        "data": {
+          "year": 2026,
+          "months": [
+            { "month": "2026-01", "expenses": 198.50, "expense_count": 9,  "incomes": 1800.00, "income_count": 1, "balance": 1601.50 },
+            { "month": "2026-02", "expenses": 234.00, "expense_count": 11, "incomes": 1800.00, "income_count": 1, "balance": 1566.00 },
+            { "month": "2026-03", "expenses": 189.85, "expense_count": 8,  "incomes": 2150.00, "income_count": 2, "balance": 1960.15 },
+            { "month": "2026-04", "expenses": 312.40, "expense_count": 14, "incomes": 2150.00, "income_count": 2, "balance": 1837.60 }
+          ]
+        }
+      }
+    }
+  },
+
+  "error_codes": {
+    "400": "Bad Request — richiesta malformata",
+    "401": "Unauthorized — token mancante, non valido o scaduto",
+    "404": "Not Found — risorsa non trovata",
+    "409": "Conflict — risorsa già esistente (es. email duplicata)",
+    "422": "Unprocessable Entity — dati non validi o mancanti",
+    "500": "Internal Server Error — errore del server"
+  },
+
+  "generic_error_format": {
+    "success": false,
+    "message": "Descrizione dell'errore leggibile"
+  }
+}
