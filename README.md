@@ -36,3 +36,14 @@ A questo punto l’utente può:
 - Modificare e eliminare le spese e le entrate
 - Visualizzare la cronologia e i riepiloghi
 ## 📸 Sistema avviato
+![registrazione](images/registrazione.png)
+![accesso](images/accesso.png)
+![dashboard](images/dashboard.png)
+![spese](images/spese.png)
+![entrate](images/entrate.png)
+![statistiche_1](images/statistiche_1.png)
+![statistiche_2](images/statistiche_2.png)
+![statistiche_3](images/statistiche_3.png)
+![statistiche_4](images/statistiche_4.png)
+![statistiche_5](images/statistiche_5.png)
+![uscita](images/uscita.png)
