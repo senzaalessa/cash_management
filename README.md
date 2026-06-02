@@ -1,7 +1,7 @@
 # 💰 cash_management
 ## 👨‍💻 Elaborato da Falzetta Christian, Latini Mattia, Senzacqua Alessandro
 ## Indice
-- 📝 [Descrizione](#descrizione)
+- 📝 [Descrizione](#-descrizione)
 - ⚙️ [Funzionalità](#funzionalità)
 - 📂 [Struttura del sistema](#struttura-del-sistema)
 - 🛠️ [Endpoints](#endpoints)
