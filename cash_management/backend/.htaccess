@@ -1,1 +1,37 @@
+# Disabilita la visualizzazione dell'elenco dei file nelle cartelle
+# (senza questa opzione, Apache mostrerebbe tutti i file se manca index.php)
+Options -Indexes
 
+# Attiva il motore di riscrittura degli URL di Apache (mod_rewrite)
+# Senza questa riga tutte le RewriteRule seguenti verrebbero ignorate
+RewriteEngine On
+
+# Imposta il percorso base da cui partono le regole di riscrittura
+# Deve corrispondere alla cartella del progetto dentro htdocs
+RewriteBase /cash_management/
+
+# Blocca l'accesso diretto alla cartella config/ (contiene credenziali DB)
+# - [F] = risponde con HTTP 403 Forbidden
+# - [L] = Last rule, smette di processare altre regole se questa corrisponde
+RewriteRule ^config/ - [F,L]
+
+# Blocca l'accesso diretto alla cartella helpers/ (contiene logica interna)
+RewriteRule ^helpers/ - [F,L]
+
+# Blocca l'accesso diretto alla cartella controllers/ (contiene logica interna)
+RewriteRule ^controllers/ - [F,L]
+
+# Condizione: applica la regola successiva solo se il percorso richiesto
+# non è un file fisico esistente sul disco (es. immagini, CSS, JS)
+RewriteCond %{REQUEST_FILENAME} !-f
+
+# Condizione: applica la regola successiva solo se il percorso richiesto
+# non è una cartella fisica esistente sul disco
+RewriteCond %{REQUEST_FILENAME} !-d
+
+# Se entrambe le condizioni sopra sono vere, riscrive qualsiasi URL
+# verso index.php che fa da router centrale per tutta l'API
+# - ^(.*)$ = cattura qualsiasi percorso
+# - [L]    = Last rule (smette di processare altre regole)
+# - [QSA]  = Query String Append (mantiene i parametri ?page=1&month=... nell'URL)
+RewriteRule ^(.*)$ index.php [L,QSA]
