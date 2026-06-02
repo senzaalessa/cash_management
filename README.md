@@ -3,3 +3,4 @@ Il progetto consiste nella realizzazione di un web service per la gestione delle
 ## 📂 Struttura del sistema
 ![struttura](images/struttura.png)
 ## 🛠️ Endpoints
+![endpoints](images/endpoints.png)
