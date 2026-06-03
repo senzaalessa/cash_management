@@ -1,0 +1,1643 @@
+<!DOCTYPE html><!-- Dichiarazione del tipo di documento HTML5 (standard moderno) -->
+<html lang="it"><!-- Radice del documento; lang="it" indica la lingua italiana per screen reader e SEO -->
+<head><!-- Sezione head: metadati, stili e risorse, non visibili all'utente -->
+<meta charset="UTF-8"><!-- Codifica caratteri UTF-8: supporta lettere accentate, emoji e tutti i simboli -->
+<meta name="viewport" content="width=device-width, initial-scale=1.0"><!-- Viewport responsive: adatta la pagina alla larghezza del dispositivo (mobile-friendly) -->
+<title>Cash Management</title><!-- Titolo della scheda del browser -->
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"><!-- Carica i font Google: DM Serif Display (titoli eleganti) e DM Sans (testo interfaccia) -->
+<style>
+  /* VARIABILI CSS GLOBALI (Custom Properties)
+     Definite su :root sono accessibili ovunque nel documento.
+     Permettono di cambiare l'intero tema modificando solo questi valori. */
+  :root {
+    --bg:#0f0f13;          /* Colore sfondo principale (quasi nero) */
+    --surface:#18181f;     /* Colore card e pannelli (grigio scuro) */
+    --surface2:#22222c;    /* Colore sfondo input e hover (un po' più chiaro di surface) */
+    --border:#2e2e3a;      /* Colore bordi e separatori */
+    --accent:#c6a96a;      /* Colore oro/dorato per elementi principali */
+    --accent2:#8b6f3e;     /* Colore oro scuro per elementi secondari */
+    --text:#f0ead8;        /* Colore testo principale (bianco caldo) */
+    --text-muted:#7a7580;  /* Colore testo secondario (grigio) */
+    --danger:#e05c5c;      /* Colore rosso per spese, errori e negativi */
+    --success:#5cc9a0;     /* Colore verde per entrate, successi e positivi */
+    --info:#60a5fa;        /* Colore blu per informazioni */
+    --radius:12px;         /* Raggio degli angoli arrotondati (border-radius) */
+    --shadow:0 8px 32px rgba(0,0,0,0.4); /* Ombra standard usata su card e modal */
+  }
+
+  /* Reset universale: elimina margin e padding di default di tutti gli elementi */
+  *{box-sizing:border-box;margin:0;padding:0;}
+  /* Stile base del body: sfondo scuro, testo chiaro, font principale, altezza minima schermo */
+  body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;font-size:15px;min-height:100vh;}
+
+  /* SCHERMATA DI AUTENTICAZIONE */
+  /* Contenitore esterno: centra la card con flexbox, gradiente radiale come sfondo */
+  .auth-wrap{display:flex;align-items:center;justify-content:center;min-height:100vh;padding:24px;background:radial-gradient(ellipse at 30% 20%,#1e1a10 0%,var(--bg) 60%);}
+  /* Card bianca di login/registrazione: sfondo surface, bordo, angoli arrotondati, larghezza max 420px */
+  .auth-card{background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:48px 40px;width:100%;max-width:420px;box-shadow:var(--shadow);}
+  /* Logo/titolo dell'app nella schermata auth: font serif, colore oro */
+  .auth-logo{font-family:'DM Serif Display',serif;font-size:32px;color:var(--accent);margin-bottom:4px;}
+  /* Riga autori sotto il logo: font piccolo, corsivo, colore oro attenuato */
+  .auth-authors{font-size:11px;color:var(--accent2);font-style:italic;margin-bottom:10px;letter-spacing:.02em;}
+  /* Sottotitolo descrittivo sotto il logo */
+  .auth-sub{color:var(--text-muted);font-size:14px;margin-bottom:36px;}
+  /* Contenitore tab Login/Registrati: flex con bordo arrotondato */
+  .tab-row{display:flex;border:1px solid var(--border);border-radius:8px;overflow:hidden;margin-bottom:28px;}
+  /* Bottone tab singolo: flex 1 per occupare metà, sfondo trasparente */
+  .tab-btn{flex:1;padding:10px;background:transparent;border:none;color:var(--text-muted);cursor:pointer;font-family:inherit;font-size:14px;font-weight:500;transition:all .2s;}
+  /* Tab attivo: sfondo oro, testo scuro */
+  .tab-btn.active{background:var(--accent);color:#0f0f13;}
+
+  /* CAMPI DI INPUT */
+  /* Etichetta campo: maiuscolo, spaziatura lettere, colore muted */
+  label{display:block;font-size:12px;font-weight:600;color:var(--text-muted);letter-spacing:.08em;text-transform:uppercase;margin-bottom:6px;}
+  /* Input, select e textarea: larghezza piena, sfondo surface2, bordo sottile, angoli arrotondati */
+  input,select,textarea{width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:inherit;font-size:15px;padding:11px 14px;outline:none;transition:border .2s;}
+  /* Focus: bordo oro per indicare il campo attivo */
+  input:focus,select:focus,textarea:focus{border-color:var(--accent);}
+  /* Textarea ridimensionabile solo in verticale, altezza minima 72px */
+  textarea{resize:vertical;min-height:72px;}
+  /* Wrapper campo con margine inferiore per spaziatura tra campi */
+  .field{margin-bottom:18px;}
+  /* Opzioni select: stesso sfondo degli input per coerenza visiva */
+  select option{background:var(--surface2);}
+
+  /* BOTTONI */
+  /* Stile base bottone: flexbox inline, gap tra icona e testo, angoli arrotondati */
+  .btn{display:inline-flex;align-items:center;gap:8px;padding:11px 20px;border-radius:8px;font-family:inherit;font-size:14px;font-weight:600;cursor:pointer;border:none;transition:all .2s;}
+  /* Bottone primario oro: piena larghezza, testo scuro */
+  .btn-primary{background:var(--accent);color:#0f0f13;width:100%;justify-content:center;}
+  /* Hover bottone primario: oro più chiaro */
+  .btn-primary:hover{background:#d4b87a;}
+  /* Bottone verde (entrate): piena larghezza, testo scuro */
+  .btn-green{background:var(--success);color:#0f0f13;width:100%;justify-content:center;}
+  /* Hover bottone verde: verde più chiaro */
+  .btn-green:hover{background:#6dd9b0;}
+  /* Bottone ghost (trasparente con bordo): per azioni secondarie */
+  .btn-ghost{background:transparent;border:1px solid var(--border);color:var(--text-muted);}
+  /* Hover ghost: bordo e testo oro */
+  .btn-ghost:hover{border-color:var(--accent);color:var(--accent);}
+  /* Bottone pericolo (elimina): bordo rosso scuro, testo rosso */
+  .btn-danger{background:transparent;border:1px solid #3a2222;color:var(--danger);}
+  /* Hover pericolo: sfondo rosso trasparente */
+  .btn-danger:hover{background:rgba(224,92,92,.1);}
+  /* Variante piccola del bottone: padding ridotto, font più piccolo */
+  .btn-sm{padding:6px 12px;font-size:13px;}
+
+  /* STRUTTURA SITO PRINCIPALE */
+  /* Griglia a due colonne: sidebar fissa 240px e area contenuto flessibile */
+  .app-wrap{display:grid;grid-template-columns:240px 1fr;min-height:100vh;}
+  /* Sidebar sinistra: sfondo surface, bordo destro, flex colonna con gap */
+  .sidebar{background:var(--surface);border-right:1px solid var(--border);padding:28px 16px;display:flex;flex-direction:column;gap:4px;}
+  /* Logo nella sidebar: font serif, oro, padding inferiore come separatore */
+  .sidebar-logo{font-family:'DM Serif Display',serif;font-size:22px;color:var(--accent);padding:0 12px 24px;}
+  /* Voce di navigazione: flex per icona e testo, cursor pointer, transizione colore */
+  .nav-item{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:8px;cursor:pointer;color:var(--text-muted);font-size:14px;font-weight:500;transition:all .2s;border:none;background:none;width:100%;text-align:left;}
+  /* Hover voce nav: sfondo più chiaro, testo bianco */
+  .nav-item:hover{background:var(--surface2);color:var(--text);}
+  /* Voce nav attiva: sfondo oro semi-trasparente, testo oro */
+  .nav-item.active{background:rgba(198,169,106,.12);color:var(--accent);}
+  /* Icona emoji nella voce di navigazione */
+  .nav-item .icon{font-size:16px;}
+  /* Footer sidebar: spinge in fondo con auto margin, bordo superiore */
+  .sidebar-footer{margin-top:auto;border-top:1px solid var(--border);padding-top:16px;}
+  /* Badge utente: avatar e nome/email in riga */
+  .user-badge{display:flex;align-items:center;gap:10px;padding:10px 12px;}
+  /* Avatar cerchio: dimensione 34px, sfondo oro scuro, iniziale utente centrata */
+  .avatar{width:34px;height:34px;border-radius:50%;background:var(--accent2);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px;color:#0f0f13;flex-shrink:0;}
+  /* Nome utente nella sidebar */
+  .user-name{font-size:13px;font-weight:600;}
+  /* Email utente nella sidebar: font piccolo, colore muted */
+  .user-email{font-size:11px;color:var(--text-muted);}
+  /* Area contenuto principale: padding generoso, scroll verticale se necessario */
+  .main{padding:36px 40px;overflow-y:auto;}
+  /* Titolo pagina: font serif grande */
+  .page-title{font-family:'DM Serif Display',serif;font-size:28px;color:var(--text);margin-bottom:4px;}
+  /* Sottotitolo pagina: testo muted piccolo */
+  .page-sub{color:var(--text-muted);font-size:14px;margin-bottom:28px;}
+  /* Classe utility per nascondere elementi: display none con !important per massima priorità */
+  .hidden{display:none!important;}
+
+  /* CARD STATISTICHE DASHBOARD */
+  /* Griglia a 4 colonne per le card di riepilogo */
+  .stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:32px;}
+  /* Card singola: sfondo surface, bordo, angoli arrotondati, padding interno */
+  .stat-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:22px;}
+  /* Card saldo positivo: bordo verde semi-trasparente */
+  .stat-card.balance-pos{border-color:rgba(92,201,160,.3);}
+  /* Card saldo negativo: bordo rosso semi-trasparente */
+  .stat-card.balance-neg{border-color:rgba(224,92,92,.3);}
+  /* Etichetta della card: testo piccolo maiuscolo muted */
+  .stat-label{font-size:12px;color:var(--text-muted);font-weight:600;text-transform:uppercase;letter-spacing:.07em;margin-bottom:10px;}
+  /* Valore principale della card: font serif grande, oro */
+  .stat-value{font-family:'DM Serif Display',serif;font-size:28px;color:var(--accent);}
+  /* Variante verde del valore (entrate, saldo positivo) */
+  .stat-value.green{color:var(--success);}
+  /* Variante rossa del valore (spese, saldo negativo) */
+  .stat-value.red{color:var(--danger);}
+  /* Testo secondario sotto il valore (es. "14 spese") */
+  .stat-sub{font-size:12px;color:var(--text-muted);margin-top:4px;}
+
+  /* LISTA SPESE/ENTRATE */
+  /* Toolbar filtri: flex wrap con gap */
+  .toolbar{display:flex;gap:12px;align-items:center;margin-bottom:20px;flex-wrap:wrap;}
+  /* Input e select nella toolbar: larghezza automatica, flex per espandersi */
+  .toolbar input,.toolbar select{width:auto;flex:1;min-width:140px;}
+  /* Contenitore lista: flex colonna con gap tra le righe */
+  .expense-list{display:flex;flex-direction:column;gap:8px;}
+  /* Riga singola spesa/entrata: flex orizzontale, bordo, hover */
+  .expense-item{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:16px 20px;display:flex;align-items:center;gap:16px;transition:all .2s;}
+  /* Hover riga: sfondo leggermente più chiaro */
+  .expense-item:hover{background:var(--surface2);}
+  /* Riga entrata: forza colore verde sull'importo */
+  .expense-item.income-row .expense-amount{color:var(--success);}
+  /* Badge categoria: cerchio colorato con emoji, dimensione fissa */
+  .cat-badge{width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;}
+  /* Area info testuale: flex 1 per occupare lo spazio disponibile, min-width:0 per overflow */
+  .expense-info{flex:1;min-width:0;}
+  /* Descrizione: tronca con puntini se troppo lunga */
+  .expense-desc{font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  /* Metadati: categoria e data, testo piccolo muted */
+  .expense-meta{font-size:12px;color:var(--text-muted);margin-top:2px;}
+  /* Importo: font serif, no a capo */
+  .expense-amount{font-family:'DM Serif Display',serif;font-size:18px;color:var(--accent);white-space:nowrap;}
+  /* Bottoni modifica/elimina: nascosti di default, appaiono sull'hover della riga */
+  .expense-actions{display:flex;gap:6px;opacity:0;transition:opacity .2s;}
+  /* Mostra i bottoni quando la riga è in hover */
+  .expense-item:hover .expense-actions{opacity:1;}
+
+  /* MODAL */
+  /* Overlay scuro che copre tutta la pagina quando il modal è aperto */
+  .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.6);backdrop-filter:blur(4px);display:flex;align-items:center;justify-content:center;z-index:100;padding:24px;}
+  /* Pannello modal: sfondo surface, bordo, larghezza max 480px, scroll se contenuto lungo */
+  .modal{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:32px;width:100%;max-width:480px;box-shadow:var(--shadow);max-height:90vh;overflow-y:auto;}
+  /* Titolo del modal: font serif */
+  .modal-title{font-family:'DM Serif Display',serif;font-size:22px;margin-bottom:24px;}
+  /* Riga bottoni del modal: flex allineato a destra */
+  .modal-actions{display:flex;gap:10px;justify-content:flex-end;margin-top:24px;}
+
+  /* GRAFICI */
+  /* Contenitore grafico: sfondo surface, bordo, angoli, padding, margine inferiore */
+  .chart-wrap{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:24px;margin-bottom:24px;}
+  /* Titolo del grafico: grassetto con margine inferiore */
+  .chart-title{font-weight:600;margin-bottom:16px;}
+  /* Griglia a due colonne per grafici affiancati (torte) */
+  .charts-row{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:24px;}
+  /* Riga singola del grafico a barre orizzontali */
+  .bar-row{display:flex;align-items:center;gap:12px;margin-bottom:10px;}
+  /* Etichetta a sinistra della barra: larghezza fissa, tronca se troppo lunga */
+  .bar-label{width:130px;font-size:13px;color:var(--text-muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+  /* Binario della barra: flex 1, altezza fissa, sfondo scuro */
+  .bar-track{flex:1;height:8px;background:var(--surface2);border-radius:4px;overflow:hidden;}
+  /* Riempimento della barra: altezza piena, transizione animata della larghezza */
+  .bar-fill{height:100%;border-radius:4px;transition:width .6s ease;}
+  /* Valore numerico a destra della barra */
+  .bar-val{font-size:13px;font-weight:500;width:80px;text-align:right;}
+
+  /* GRAFICO BARRE MENSILI DOPPIE */
+  /* Griglia 12 colonne (una per mese) */
+  .month-grid{display:grid;grid-template-columns:repeat(12,1fr);gap:4px;margin-top:12px;}
+  /* Colonna singola mese: flex colonna centrata */
+  .month-col{display:flex;flex-direction:column;align-items:center;gap:4px;}
+  /* Area barre del mese: altezza fissa, flex row allineato in basso */
+  .month-bars{width:100%;height:80px;display:flex;align-items:flex-end;gap:2px;}
+  /* Singola barra (entrate o spese): flex 1, angoli in alto arrotondati, transizione altezza */
+  .month-bar{flex:1;border-radius:3px 3px 0 0;transition:height .5s ease;min-height:2px;}
+  /* Etichetta mese sotto le barre: font piccolissimo */
+  .month-name{font-size:10px;color:var(--text-muted);}
+
+  /* BARRE SALDO */
+  /* Riga wrapper saldo: flex con gap */
+  .balance-bar-wrap{display:flex;align-items:center;gap:10px;margin-bottom:8px;}
+  /* Etichetta saldo: larghezza fissa */
+  .balance-label{width:130px;font-size:13px;color:var(--text-muted);}
+  /* Binario barra saldo: position relative per sovrapporre le barre */
+  .balance-track{flex:1;height:10px;background:var(--surface2);border-radius:5px;overflow:hidden;position:relative;}
+  /* Barra entrate (verde): scorre da sinistra */
+  .balance-bar-inc{height:100%;background:var(--success);border-radius:5px;transition:width .6s;}
+  /* Barra spese (rossa): sovrapposta in assoluto, semi-trasparente */
+  .balance-bar-exp{height:100%;background:var(--danger);border-radius:5px;position:absolute;top:0;left:0;opacity:.7;transition:width .6s;}
+  /* Valore a destra della barra saldo */
+  .balance-val{font-size:13px;font-weight:500;width:80px;text-align:right;}
+
+  /* NOTIFICHE TOAST */
+  /* Contenitore toast: posizione fissa in basso a destra, z-index alto */
+  #toast-container{position:fixed;bottom:24px;right:24px;z-index:200;display:flex;flex-direction:column;gap:8px;}
+  /* Singola notifica toast: sfondo surface2, bordo, angoli, padding, animazione entrata */
+  .toast{background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:12px 20px;font-size:14px;display:flex;align-items:center;gap:10px;animation:slideIn .25s ease;box-shadow:var(--shadow);}
+  /* Toast successo: bordo sinistro verde */
+  .toast.success{border-left:3px solid var(--success);}
+  /* Toast errore: bordo sinistro rosso */
+  .toast.error{border-left:3px solid var(--danger);}
+  /* Animazione slideIn: scivola da destra e appare gradualmente */
+  @keyframes slideIn{from{transform:translateX(60px);opacity:0}to{transform:none;opacity:1}}
+  /* Stato vuoto (nessun risultato): testo centrato con padding generoso */
+  .empty-state{text-align:center;padding:60px 20px;color:var(--text-muted);}
+  /* Icona dello stato vuoto: font grande */
+  .empty-state .icon{font-size:48px;margin-bottom:16px;}
+  /* Contenitore paginazione: flex centrato con gap */
+  .pagination{display:flex;gap:8px;align-items:center;justify-content:center;margin-top:20px;}
+  /* Singolo numero di pagina: padding, bordo, cursore pointer */
+  .page-num{padding:6px 12px;border-radius:6px;cursor:pointer;font-size:13px;background:var(--surface);border:1px solid var(--border);color:var(--text-muted);}
+  /* Pagina attiva: sfondo oro, testo scuro */
+  .page-num.active{background:var(--accent);color:#0f0f13;border-color:var(--accent);}
+
+  /* TOGGLE TIPO (spese/entrate nel confronto) */
+  /* Contenitore toggle: flex con bordo arrotondato, larghezza fit-content */
+  .type-toggle{display:flex;border:1px solid var(--border);border-radius:8px;overflow:hidden;margin-bottom:20px;width:fit-content;}
+  /* Bottone tipo: trasparente, font coerente */
+  .type-btn{padding:8px 20px;background:transparent;border:none;color:var(--text-muted);cursor:pointer;font-family:inherit;font-size:14px;font-weight:500;transition:all .2s;}
+  /* Tipo spese attivo: sfondo rosso semi-trasparente, testo rosso */
+  .type-btn.active-exp{background:rgba(224,92,92,.15);color:var(--danger);}
+  /* Tipo entrate attivo: sfondo verde semi-trasparente, testo verde */
+  .type-btn.active-inc{background:rgba(92,201,160,.15);color:var(--success);}
+  /* Divisore sezione: linea orizzontale con etichetta testo centrata */
+  .section-divider{display:flex;align-items:center;gap:12px;margin:20px 0;}
+  /* Testo del divisore: piccolo, maiuscolo, muted */
+  .section-divider span{font-size:12px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:.08em;white-space:nowrap;}
+  /* Linee del divisore: generate con ::before e ::after, flex 1 per espandersi */
+  .section-divider::before,.section-divider::after{content:'';flex:1;height:1px;background:var(--border);}
+</style>
+</head>
+<body><!-- Inizio del corpo visibile della pagina -->
+
+<!-- SEZIONE AUTENTICAZIONE
+     Visibile solo prima del login. Nascosta da JS dopo l'accesso.
+     Contiene il form di login e quello di registrazione (alternabili). -->
+<div id="auth-section" class="auth-wrap"><!-- Contenitore fullscreen con sfondo gradiente -->
+  <div class="auth-card"><!-- Card centrale di login/registrazione -->
+    <div class="auth-logo">💰 Cash Management</div><!-- Logo con emoji e nome dell'app -->
+    <div class="auth-authors">Elaborato da Falzetta Christian, Latini Mattia, Senzacqua Alessandro</div><!-- Riga autori del progetto -->
+    <div class="auth-sub">Gestisci le tue finanze con stile</div><!-- Slogan descrittivo -->
+    <div class="tab-row"><!-- Riga con i due tab Login / Registrati -->
+      <button class="tab-btn active" onclick="switchTab('login')">Accedi</button><!-- Tab login: attivo di default -->
+      <button class="tab-btn" onclick="switchTab('register')">Registrati</button><!-- Tab registrazione: inattivo di default -->
+    </div>
+
+    <!-- Form di login: visibile di default -->
+    <div id="login-form">
+      <div class="field"><label>Email</label><input type="email" id="l-email" placeholder="mario@example.com"></div><!-- Campo email login -->
+      <div class="field"><label>Password</label><input type="password" id="l-pass" placeholder="••••••••"></div><!-- Campo password login (type=password nasconde i caratteri) -->
+      <button class="btn btn-primary" onclick="doLogin()">Accedi</button><!-- Bottone submit login: chiama doLogin() -->
+    </div>
+
+    <!-- Form di registrazione: nascosto di default (classe hidden) -->
+    <div id="register-form" class="hidden">
+      <div class="field"><label>Username</label><input type="text" id="r-username" placeholder="Mario"></div><!-- Campo nome utente -->
+      <div class="field"><label>Email</label><input type="email" id="r-email" placeholder="mario@example.com"></div><!-- Campo email registrazione -->
+      <div class="field"><label>Password</label><input type="password" id="r-pass" placeholder="Min 6 caratteri"></div><!-- Campo password (minimo 6 caratteri, validato in JS) -->
+      <button class="btn btn-primary" onclick="doRegister()">Crea account</button><!-- Bottone submit registrazione: chiama doRegister() -->
+    </div>
+  </div>
+</div>
+
+<!-- SITO PRINCIPALE
+     Nascosta di default (classe hidden). Viene mostrata da JS dopo il login.
+     Layout a griglia: sidebar sinistra + area contenuto destra. -->
+<div id="app-section" class="app-wrap hidden"><!-- Griglia 240px + 1fr, nascosta finché non si fa login -->
+  <aside class="sidebar"><!-- Barra laterale di navigazione sinistra -->
+    <div class="sidebar-logo">💰 Cash Management</div><!-- Logo nell'header della sidebar -->
+
+    <!-- Voci di navigazione: ogni bottone chiama showPage() con il nome della pagina -->
+    <button class="nav-item active" onclick="showPage('dashboard')" id="nav-dashboard"><span class="icon">📊</span> Dashboard</button><!-- Dashboard: attiva di default -->
+    <button class="nav-item" onclick="showPage('expenses')" id="nav-expenses"><span class="icon">💸</span> Spese</button><!-- Pagina lista spese -->
+    <button class="nav-item" onclick="showPage('incomes')" id="nav-incomes"><span class="icon">💵</span> Entrate</button><!-- Pagina lista entrate -->
+    <button class="nav-item" onclick="showPage('stats')" id="nav-stats"><span class="icon">📈</span> Statistiche</button><!-- Pagina statistiche con grafici -->
+
+    <!-- Footer sidebar: badge utente e bottone logout in fondo -->
+    <div class="sidebar-footer">
+      <div class="user-badge"><!-- Contenitore avatar + dati utente -->
+        <div class="avatar" id="user-avatar">?</div><!-- Avatar circolare con iniziale (aggiornato da JS dopo login) -->
+        <div>
+          <div class="user-name" id="user-name-display">—</div><!-- Nome utente (aggiornato da JS) -->
+          <div class="user-email" id="user-email-display">—</div><!-- Email utente (aggiornata da JS) -->
+        </div>
+      </div>
+      <button class="nav-item" onclick="doLogout()" style="margin-top:8px;"><span class="icon">🚪</span> Esci</button><!-- Bottone logout: chiama doLogout() -->
+    </div>
+  </aside>
+
+  <main class="main"><!-- Area contenuto principale: cambia in base alla pagina attiva -->
+
+    <!-- PAGINA: DASHBOARD
+         Mostra un riepilogo visivo di entrate, spese, saldo e grafici.
+         Visibile di default al login. -->
+    <div id="page-dashboard">
+      <h1 class="page-title">Dashboard</h1><!-- Titolo pagina -->
+      <p class="page-sub" id="dash-greeting">Buongiorno!</p><!-- Saluto personalizzato (aggiornato da JS con nome utente e ora) -->
+
+      <!-- Griglia 4 card di riepilogo mensile -->
+      <div class="stats-grid">
+        <!-- Card 1: Entrate del mese corrente -->
+        <div class="stat-card">
+          <div class="stat-label">Entrate mese</div><!-- Etichetta card -->
+          <div class="stat-value green" id="stat-inc">€0</div><!-- Valore entrate (verde, aggiornato da JS) -->
+          <div class="stat-sub" id="stat-inc-count">0 entrate</div><!-- Numero di entrate registrate -->
+        </div>
+        <!-- Card 2: Spese del mese corrente -->
+        <div class="stat-card">
+          <div class="stat-label">Spese mese</div>
+          <div class="stat-value red" id="stat-exp">€0</div><!-- Valore spese (rosso, aggiornato da JS) -->
+          <div class="stat-sub" id="stat-exp-count">0 spese</div><!-- Numero di spese registrate -->
+        </div>
+        <!-- Card 3: Saldo del mese (id="balance-card" per cambio classe JS) -->
+        <div class="stat-card" id="balance-card">
+          <div class="stat-label">Saldo mese</div>
+          <div class="stat-value" id="stat-balance">€0</div><!-- Saldo (verde/rosso in base al valore, da JS) -->
+          <div class="stat-sub" id="stat-balance-sub">—</div><!-- "Risparmio del mese" o "Deficit del mese" -->
+        </div>
+        <!-- Card 4: Saldo annuale -->
+        <div class="stat-card">
+          <div class="stat-label">Anno <span id="stat-year-label">—</span></div><!-- "Anno 2026" (anno aggiornato da JS) -->
+          <div class="stat-value" id="stat-year-balance">€0</div><!-- Saldo annuale (verde/rosso da JS) -->
+          <div class="stat-sub" id="stat-year-sub">Saldo annuale</div>
+        </div>
+      </div>
+
+      <!-- Grafico barre doppie: entrate vs uscite per ogni mese dell'anno -->
+      <div class="chart-wrap">
+        <div class="chart-title">Entrate vs Uscite — <span id="chart-year" style="color:var(--accent)"></span></div><!-- Anno aggiornato da JS -->
+        <div class="month-grid" id="month-chart"></div><!-- Griglia 12 colonne riempita da renderGroupedMonthChart() -->
+        <!-- Legenda colori: verde=entrate, rosso=spese -->
+        <div style="display:flex;gap:20px;margin-top:12px;padding-left:4px;">
+          <span style="font-size:12px;color:var(--text-muted);display:flex;align-items:center;gap:6px;"><span style="width:10px;height:10px;background:var(--success);border-radius:2px;display:inline-block;"></span>Entrate</span><!-- Legenda entrate -->
+          <span style="font-size:12px;color:var(--text-muted);display:flex;align-items:center;gap:6px;"><span style="width:10px;height:10px;background:var(--danger);border-radius:2px;display:inline-block;"></span>Spese</span><!-- Legenda spese -->
+        </div>
+      </div>
+
+      <!-- Griglia 2 colonne: spese per categoria + entrate per categoria -->
+      <div class="charts-row">
+        <!-- Grafico barre orizzontali spese per categoria -->
+        <div class="chart-wrap" style="margin-bottom:0">
+          <div class="chart-title">Spese per categoria</div>
+          <div id="cat-exp-chart"></div><!-- Riempito da renderCatChart() con dati spese -->
+        </div>
+        <!-- Grafico barre orizzontali entrate per categoria -->
+        <div class="chart-wrap" style="margin-bottom:0">
+          <div class="chart-title">Entrate per categoria</div>
+          <div id="cat-inc-chart"></div><!-- Riempito da renderCatChart() con dati entrate (barre verdi) -->
+        </div>
+      </div>
+    </div><!-- Fine pagina dashboard -->
+
+    <!-- PAGINA: SPESE
+         Lista paginata delle spese con filtri e bottone aggiungi. -->
+    <div id="page-expenses" class="hidden"><!-- Nascosta di default -->
+      <h1 class="page-title">Le mie spese</h1>
+      <p class="page-sub">Tieni traccia di ogni uscita</p>
+
+      <!-- Toolbar filtri: mese, categoria, ricerca testo, bottone aggiungi -->
+      <div class="toolbar">
+        <input type="month" id="filter-month" onchange="loadExpenses()"><!-- Selettore mese: formato YYYY-MM, ricarica lista al cambio -->
+        <select id="filter-cat" onchange="loadExpenses()"><option value="">Tutte le categorie</option></select><!-- Select categoria: opzioni riempite da loadCategories() -->
+        <input type="text" id="filter-search" placeholder="🔍 Cerca..." oninput="debounceSearch()" style="min-width:180px"><!-- Campo ricerca testuale con debounce (attende 400ms prima di cercare) -->
+        <button class="btn btn-primary btn-sm" style="width:auto" onclick="openExpenseModal()">+ Aggiungi spesa</button><!-- Apre il modal di creazione spesa -->
+      </div>
+      <div class="expense-list" id="expense-list"></div><!-- Lista righe spese: riempita da renderExpenses() -->
+      <div class="pagination" id="exp-pagination"></div><!-- Paginazione: riempita da renderExpenses() -->
+    </div><!-- Fine pagina spese -->
+
+    <!-- PAGINA: ENTRATE
+         Lista paginata delle entrate con filtri e bottone aggiungi. -->
+    <div id="page-incomes" class="hidden"><!-- Nascosta di default -->
+      <h1 class="page-title">Le mie entrate</h1>
+      <p class="page-sub">Registra stipendi, freelance e altri guadagni</p>
+
+      <!-- Toolbar filtri entrate: identica alle spese ma con ID diversi -->
+      <div class="toolbar">
+        <input type="month" id="inc-filter-month" onchange="loadIncomes()"><!-- Selettore mese entrate -->
+        <select id="inc-filter-cat" onchange="loadIncomes()"><option value="">Tutte le categorie</option></select><!-- Select categoria entrate -->
+        <input type="text" id="inc-filter-search" placeholder="🔍 Cerca..." oninput="debounceIncSearch()" style="min-width:180px"><!-- Ricerca entrate con debounce -->
+        <button class="btn btn-green btn-sm" style="width:auto" onclick="openIncomeModal()">+ Aggiungi entrata</button><!-- Apre il modal di creazione entrata (bottone verde) -->
+      </div>
+      <div class="expense-list" id="income-list"></div><!-- Lista righe entrate: riempita da renderIncomes() -->
+      <div class="pagination" id="inc-pagination"></div><!-- Paginazione entrate -->
+    </div><!-- Fine pagina entrate -->
+
+    <!-- PAGINA: STATISTICHE
+         Grafici avanzati: torte, cumulativo, confronto anni. -->
+    <div id="page-stats" class="hidden"><!-- Nascosta di default -->
+      <h1 class="page-title">Statistiche</h1>
+      <p class="page-sub">Analisi approfondita delle tue finanze</p>
+
+      <!-- Selettore anno: ricarica tutti i grafici al cambio -->
+      <div style="display:flex;gap:12px;margin-bottom:24px;align-items:center;">
+        <select id="stats-year-sel" onchange="loadStatsYear()" style="width:120px;"></select><!-- Opzioni anno: riempite dinamicamente da populateYearSel() con gli anni che hanno dati -->
+        <span style="font-size:13px;color:var(--text-muted);">Anno di riferimento per tutti i grafici</span><!-- Label descrittiva -->
+      </div>
+
+      <!-- Riga grafici a torta: spese + entrate per categoria affiancati -->
+      <div class="charts-row"><!-- Griglia 2 colonne -->
+        <!-- Torta spese per categoria -->
+        <div class="chart-wrap" style="margin-bottom:0">
+          <div class="chart-title">🔴 Spese per categoria</div>
+          <div id="stats-pie-exp" style="display:flex;align-items:center;gap:24px;flex-wrap:wrap;"></div><!-- Riempito da renderPieChart() con dati spese annuali aggregati -->
+        </div>
+        <!-- Torta entrate per categoria -->
+        <div class="chart-wrap" style="margin-bottom:0">
+          <div class="chart-title">🟢 Entrate per categoria</div>
+          <div id="stats-pie-inc" style="display:flex;align-items:center;gap:24px;flex-wrap:wrap;"></div><!-- Riempito da renderPieChart() con dati entrate annuali aggregati (barre verdi) -->
+        </div>
+      </div>
+      <div style="margin-bottom:24px;"></div><!-- Spaziatura tra le due righe di grafici -->
+
+      <!-- Grafico saldo mensile: barre orizzontali verde/rosso per ogni mese -->
+      <div class="chart-wrap">
+        <div class="chart-title">⚖️ Saldo mensile (entrate − spese)</div>
+        <div id="stats-balance-chart"></div><!-- Riempito da loadStatsYear() con barre saldo per ogni mese -->
+      </div>
+
+      <!-- Grafico barre doppie mensili: entrate vs uscite per ogni mese dell'anno -->
+      <div class="chart-wrap">
+        <div class="chart-title">📊 Entrate vs Uscite mensili</div>
+        <div class="month-grid" id="stats-month-chart"></div><!-- Griglia 12 colonne riempita da renderGroupedMonthChart() -->
+        <!-- Legenda colori del grafico -->
+        <div style="display:flex;gap:20px;margin-top:12px;">
+          <span style="font-size:12px;color:var(--text-muted);display:flex;align-items:center;gap:6px;"><span style="width:10px;height:10px;background:var(--success);border-radius:2px;display:inline-block;"></span>Entrate</span><!-- Legenda barra verde -->
+          <span style="font-size:12px;color:var(--text-muted);display:flex;align-items:center;gap:6px;"><span style="width:10px;height:10px;background:var(--danger);border-radius:2px;display:inline-block;"></span>Spese</span><!-- Legenda barra rossa -->
+        </div>
+      </div>
+
+      <!-- Grafico a linee SVG: andamento cumulativo entrate, spese e saldo -->
+      <div class="chart-wrap">
+        <div class="chart-title">📈 Andamento cumulativo anno</div>
+        <svg id="stats-cumulative-chart" width="100%" height="200" style="overflow:visible;display:block;"></svg><!-- SVG riempito da renderCumulativeChart() con tre linee polyline -->
+        <!-- Legenda linee del grafico cumulativo -->
+        <div style="display:flex;gap:20px;margin-top:8px;">
+          <span style="font-size:12px;color:var(--text-muted);display:flex;align-items:center;gap:6px;"><span style="width:24px;height:2px;background:var(--success);display:inline-block;"></span>Entrate cumulative</span><!-- Linea verde continua -->
+          <span style="font-size:12px;color:var(--text-muted);display:flex;align-items:center;gap:6px;"><span style="width:24px;height:2px;background:var(--danger);display:inline-block;"></span>Spese cumulative</span><!-- Linea rossa continua -->
+          <span style="font-size:12px;color:var(--text-muted);display:flex;align-items:center;gap:6px;"><span style="width:24px;height:2px;background:var(--accent);stroke-dasharray:4;display:inline-block;border-top:2px dashed var(--accent);height:0;"></span>Saldo cumulativo</span><!-- Linea oro tratteggiata -->
+        </div>
+      </div>
+
+      <!-- Grafico confronto anni: barre affiancate anno corrente vs precedente -->
+      <div class="chart-wrap">
+        <div class="chart-title">🔁 Confronto <span id="stats-cmp-year-a" style="color:var(--accent)"></span> vs <span id="stats-cmp-year-b" style="color:var(--text-muted)"></span></div><!-- Titolo con anni aggiornati da JS -->
+        <!-- Toggle Spese/Entrate: cambia il tipo di dato visualizzato -->
+        <div style="display:flex;gap:12px;margin-bottom:16px;">
+          <button class="type-btn active-exp" id="cmp-btn-exp" onclick="setCmpType('expenses')" style="border-radius:6px;border:1px solid var(--border)">Spese</button><!-- Bottone spese: attivo di default (rosso) -->
+          <button class="type-btn" id="cmp-btn-inc" onclick="setCmpType('incomes')" style="border-radius:6px;border:1px solid var(--border)">Entrate</button><!-- Bottone entrate: inattivo di default -->
+        </div>
+        <div id="stats-compare-chart"></div><!-- Barre confronto riempite da renderCompareChart() -->
+        <!-- Legenda colori confronto -->
+        <div style="display:flex;gap:20px;margin-top:8px;">
+          <span style="font-size:12px;color:var(--text-muted);display:flex;align-items:center;gap:6px;"><span style="width:10px;height:10px;background:var(--accent);border-radius:2px;display:inline-block;"></span>Anno selezionato</span><!-- Barra oro: anno selezionato -->
+          <span style="font-size:12px;color:var(--text-muted);display:flex;align-items:center;gap:6px;"><span style="width:10px;height:10px;background:var(--border);border-radius:2px;display:inline-block;"></span>Anno precedente</span><!-- Barra grigia: anno precedente -->
+        </div>
+      </div>
+
+    </div><!-- Fine pagina statistiche -->
+
+  </main>
+</div><!-- Fine app-section -->
+
+<!-- MODAL NUOVA/MODIFICA SPESA
+     Overlay a schermo intero con form. Aperto da openExpenseModal().
+     Nascosto di default. Gestisce sia creazione che modifica (editingExpId). -->
+<div class="modal-overlay hidden" id="expense-modal"><!-- Sfondo scuro semi-trasparente con blur -->
+  <div class="modal"><!-- Pannello bianco centrato -->
+    <div class="modal-title" id="exp-modal-title">Nuova spesa</div><!-- Titolo modal: "Nuova spesa" o "Modifica spesa" (aggiornato da JS) -->
+    <div class="field"><label>Importo (€)</label><input type="number" id="f-amount" step="0.01" min="0.01" placeholder="0.00"></div><!-- Campo importo: numerico, step 0.01 per i centesimi, minimo 0.01 -->
+    <div class="field"><label>Descrizione</label><input type="text" id="f-desc" placeholder="Es: Spesa al supermercato"></div><!-- Campo descrizione testuale -->
+    <div class="field"><label>Categoria</label><select id="f-cat"></select></div><!-- Select categoria: opzioni riempite da loadCategories() -->
+    <div class="field"><label>Data</label><input type="date" id="f-date"></div><!-- Campo data: formato YYYY-MM-DD, default oggi (impostato da JS) -->
+    <div class="field"><label>Note (opzionale)</label><textarea id="f-notes" placeholder="Note aggiuntive..."></textarea></div><!-- Textarea note: facoltativo -->
+    <div class="modal-actions"><!-- Bottoni in fondo al modal, allineati a destra -->
+      <button class="btn btn-ghost" onclick="closeExpenseModal()">Annulla</button><!-- Chiude il modal senza salvare -->
+      <button class="btn btn-primary" onclick="saveExpense()" style="width:auto">Salva</button><!-- Chiama saveExpense(): POST o PUT in base a editingExpId -->
+    </div>
+  </div>
+</div>
+
+<!-- MODAL NUOVA/MODIFICA ENTRATA
+     Identico al modal spese ma per le entrate (categoria e bottone diversi). -->
+<div class="modal-overlay hidden" id="income-modal"><!-- Overlay nascosto di default -->
+  <div class="modal">
+    <div class="modal-title" id="inc-modal-title">Nuova entrata</div><!-- "Nuova entrata" o "Modifica entrata" -->
+    <div class="field"><label>Importo (€)</label><input type="number" id="if-amount" step="0.01" min="0.01" placeholder="0.00"></div><!-- Importo entrata: prefisso "if-" per distinguere dagli ID del modal spese -->
+    <div class="field"><label>Descrizione</label><input type="text" id="if-desc" placeholder="Es: Stipendio maggio"></div><!-- Descrizione entrata -->
+    <div class="field"><label>Categoria</label><select id="if-cat"></select></div><!-- Select categoria entrate: riempito da loadIncomeCategories() -->
+    <div class="field"><label>Data</label><input type="date" id="if-date"></div><!-- Data entrata -->
+    <div class="field"><label>Note (opzionale)</label><textarea id="if-notes" placeholder="Note aggiuntive..."></textarea></div><!-- Note facoltative -->
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="closeIncomeModal()">Annulla</button><!-- Chiude senza salvare -->
+      <button class="btn btn-green" onclick="saveIncome()" style="width:auto">Salva</button><!-- Salva entrata (bottone verde invece di oro) -->
+    </div>
+  </div>
+</div>
+
+<!-- Contenitore notifiche toast: le notifiche vengono aggiunte/rimosse dinamicamente da JS -->
+<div id="toast-container"></div>
+
+<script>
+// ============================================================
+// CASH MANAGEMENT - Frontend JavaScript
+// Gestisce tutta l'interazione con l'API REST e il DOM.
+// Struttura: helpers → auth → navigazione → dashboard →
+//            spese → entrate → modali → statistiche → init
+// ============================================================
+
+// URL base dell'API (deve corrispondere alla cartella in htdocs)
+const API = '/cash_management';
+
+// Token di autenticazione Bearer, recuperato dal localStorage se già salvato (sessione precedente)
+let token = localStorage.getItem('et_token') || '';
+
+// Array delle categorie di spesa e di entrata, caricati all'avvio
+let categories = [], incomeCategories = [];
+
+// ID della spesa/entrata in modifica (null = stiamo creando, non modificando)
+let editingExpId = null, editingIncId = null;
+
+// Pagina corrente per la paginazione delle spese e delle entrate
+let expPage = 1, incPage = 1;
+
+// Timer per il debounce della ricerca (evita troppe chiamate API mentre si digita)
+let searchTimer = null, incSearchTimer = null;
+
+// ============================================================
+// SEZIONE: HELPERS — Funzioni di utilità riusabili
+// ============================================================
+
+// ============================================================
+// Funzione: api()
+// Esegue una chiamata HTTP all'API REST con il token Bearer.
+// Restituisce l'oggetto JSON della risposta, oppure null se
+// il token è scaduto (401) e viene fatto logout automatico.
+// ============================================================
+async function api(method, path, body = null) {
+  // Costruisce le opzioni della richiesta fetch
+  const opts = { method, headers: { 'Content-Type':'application/json','Authorization':'Bearer '+token } };
+
+  // Aggiunge il corpo JSON solo se presente (POST/PUT)
+  if (body) opts.body = JSON.stringify(body);
+
+  // Esegue la chiamata HTTP all'endpoint API
+  const res = await fetch(API + path, opts);
+
+  // Decodifica la risposta JSON
+  const data = await res.json();
+
+  // Se il server risponde 401 (token scaduto/invalido), effettua il logout automatico silenzioso
+  if (res.status === 401) { doLogout(true); return null; }
+
+  // Restituisce i dati JSON della risposta
+  return data;
+}
+
+// ============================================================
+// Funzione: fmt()
+// Formatta un numero come valuta in euro con 2 decimali
+// usando il formato italiano (es. 1.234,56).
+// ============================================================
+function fmt(n) { return '€' + Number(n).toLocaleString('it-IT',{minimumFractionDigits:2,maximumFractionDigits:2}); }
+
+// ============================================================
+// Funzione: fmtDate()
+// Formatta una data ISO (YYYY-MM-DD) nel formato italiano
+// leggibile (es. "15 mag 2026").
+// ============================================================
+function fmtDate(d) { return new Date(d).toLocaleDateString('it-IT',{day:'2-digit',month:'short',year:'numeric'}); }
+
+// ============================================================
+// Funzione: toast()
+// Mostra una notifica temporanea in basso a destra.
+// type: 'success' (verde) o 'error' (rosso).
+// Si auto-rimuove dopo 3,5 secondi.
+// ============================================================
+function toast(msg, type='success') {
+  // Crea l'elemento HTML della notifica
+  const t = document.createElement('div');
+
+  // Imposta la classe CSS (determina il colore del bordo)
+  t.className = 'toast '+type;
+
+  // Imposta il contenuto con emoji e testo del messaggio
+  t.innerHTML = (type==='success'?'✅':'❌')+' '+msg;
+
+  // Aggiunge la notifica al contenitore fisso in basso a destra
+  document.getElementById('toast-container').appendChild(t);
+
+  // Rimuove automaticamente la notifica dopo 3500 millisecondi
+  setTimeout(()=>t.remove(), 3500);
+}
+
+// ============================================================
+// SEZIONE: AUTENTICAZIONE
+// ============================================================
+
+// ============================================================
+// Funzione: switchTab()
+// Alterna la visualizzazione tra il form di login e quello
+// di registrazione nella schermata di autenticazione.
+// ============================================================
+function switchTab(tab) {
+  // Attiva/disattiva la classe "active" sui due bottoni tab
+  document.querySelectorAll('.tab-btn').forEach((b,i)=>b.classList.toggle('active',(tab==='login')===(i===0)));
+
+  // Mostra/nasconde il form di login
+  document.getElementById('login-form').classList.toggle('hidden', tab!=='login');
+
+  // Mostra/nasconde il form di registrazione
+  document.getElementById('register-form').classList.toggle('hidden', tab!=='register');
+}
+
+// ============================================================
+// Funzione: doLogin()
+// Legge email e password dal form e chiama POST /auth/login.
+// In caso di successo, salva il token e inizializza l'app.
+// ============================================================
+async function doLogin() {
+  // Chiama l'API di login con i valori dai campi HTML
+  const data = await api('POST','/auth/login',{email:document.getElementById('l-email').value,password:document.getElementById('l-pass').value});
+
+  // Se la risposta è null (es. errore di rete), esce senza fare nulla
+  if (!data) return;
+
+  // Se il server risponde con errore, mostra la notifica di errore
+  if (!data.success){toast(data.message,'error');return;}
+
+  // Salva il token in memoria e nel localStorage per sessioni future
+  token = data.data.token; localStorage.setItem('et_token',token);
+
+  // Inizializza l'interfaccia con i dati dell'utente autenticato
+  initApp(data.data.user);
+}
+
+// ============================================================
+// Funzione: doRegister()
+// Legge username, email e password dal form di registrazione
+// e chiama POST /auth/register.
+// ============================================================
+async function doRegister() {
+  // Chiama l'API di registrazione con i valori dai campi HTML
+  const data = await api('POST','/auth/register',{username:document.getElementById('r-username').value,email:document.getElementById('r-email').value,password:document.getElementById('r-pass').value});
+
+  // Se la risposta è null (es. errore di rete), esce
+  if (!data) return;
+
+  // Se errore, mostra il messaggio dell'API
+  if (!data.success){toast(data.message,'error');return;}
+
+  // Registrazione riuscita: salva il token e inizializza l'app
+  token = data.data.token; localStorage.setItem('et_token',token); initApp(data.data.user);
+}
+
+// ============================================================
+// Funzione: doLogout()
+// Chiama POST /auth/logout per invalidare il token sul server,
+// poi pulisce lo stato locale e torna alla schermata di login.
+// silent=true evita di mostrare la notifica (usato per logout automatici).
+// ============================================================
+async function doLogout(silent=false) {
+  // Notifica il server dell'invalidazione del token
+  await api('POST','/auth/logout');
+
+  // Pulisce il token dalla memoria e dal localStorage
+  token=''; localStorage.removeItem('et_token');
+
+  // Mostra la sezione di autenticazione
+  document.getElementById('auth-section').classList.remove('hidden');
+
+  // Nasconde la sezione dell'applicazione
+  document.getElementById('app-section').classList.add('hidden');
+
+  // Mostra la notifica solo se non è un logout silenzioso
+  if (!silent) toast('Logout effettuato');
+}
+
+// ============================================================
+// Funzione: checkAuth()
+// Verifica se il token salvato è ancora valido chiamando GET /auth/me.
+// Se valido, inizializza l'app. Altrimenti restituisce false.
+// Usata all'avvio per ripristinare la sessione precedente.
+// ============================================================
+async function checkAuth() {
+  // Se non c'è un token salvato, non c'è nessuna sessione da ripristinare
+  if (!token) return false;
+
+  // Chiama l'API per verificare il token e ottenere i dati utente
+  const data = await api('GET','/auth/me');
+
+  // Se il token è valido, inizializza l'app con i dati utente
+  if (data?.success){initApp(data.data);return true;}
+
+  // Token non valido: restituisce false
+  return false;
+}
+
+// ============================================================
+// Funzione: initApp()
+// Inizializza l'interfaccia dell'applicazione dopo il login.
+// Aggiorna la sidebar con i dati utente e carica i dati iniziali.
+// ============================================================
+function initApp(user) {
+  // Nasconde la schermata di autenticazione
+  document.getElementById('auth-section').classList.add('hidden');
+
+  // Mostra la schermata principale dell'applicazione
+  document.getElementById('app-section').classList.remove('hidden');
+
+  // Imposta l'avatar con l'iniziale del nome utente in maiuscolo
+  document.getElementById('user-avatar').textContent = user.username[0].toUpperCase();
+
+  // Mostra il nome utente nella sidebar
+  document.getElementById('user-name-display').textContent = user.username;
+
+  // Mostra l'email nella sidebar
+  document.getElementById('user-email-display').textContent = user.email;
+
+  // Genera il saluto in base all'ora del giorno
+  const h = new Date().getHours(); // Ore correnti (0-23)
+  document.getElementById('dash-greeting').textContent = (h<12?'Buongiorno':h<18?'Buon pomeriggio':'Buonasera')+', '+user.username+'!';
+
+  // Carica le categorie di spesa e di entrata in memoria
+  loadCategories(); loadIncomeCategories();
+
+  // Mostra la dashboard come pagina iniziale
+  showPage('dashboard');
+
+  // I selettori mese e anno vengono popolati quando l'utente apre la pagina Statistiche
+}
+
+// ============================================================
+// SEZIONE: NAVIGAZIONE
+// ============================================================
+
+// ============================================================
+// Funzione: showPage()
+// Mostra la pagina selezionata e nasconde le altre.
+// Aggiorna anche la voce attiva nel menu laterale.
+// ============================================================
+function showPage(page) {
+  // Per ogni pagina possibile, mostra/nasconde e attiva/disattiva la nav
+  ['dashboard','expenses','incomes','stats'].forEach(p=>{
+    document.getElementById('page-'+p).classList.toggle('hidden',p!==page);   // Mostra solo la pagina selezionata
+    document.getElementById('nav-'+p).classList.toggle('active',p===page);    // Evidenzia la voce di menu attiva
+  });
+
+  // Carica i dati della pagina selezionata
+  if (page==='dashboard') loadDashboard();
+  if (page==='expenses')  { setDefaultMonth('filter-month'); loadExpenses(); }
+  if (page==='incomes')   { setDefaultMonth('inc-filter-month'); loadIncomes(); }
+  if (page==='stats') {
+    // populateYearSel è async: aspetta che finisca poi carica i grafici annuali
+    populateYearSel().then(() => loadStatsYear());
+  }
+}
+
+// ============================================================
+// Funzione: setDefaultMonth()
+// Imposta il campo selettore del mese al mese corrente
+// se non è già stato selezionato dall'utente.
+// ============================================================
+function setDefaultMonth(id) {
+  const el = document.getElementById(id);
+
+  // Imposta il valore solo se il campo è vuoto (non sovrascrive la selezione utente)
+  if (!el.value) el.value = new Date().toISOString().slice(0,7); // Prende YYYY-MM dalla data ISO
+}
+
+// ============================================================
+// SEZIONE: CATEGORIE
+// ============================================================
+
+// ============================================================
+// Funzione: loadCategories()
+// Carica le categorie di SPESA dall'API e popola i select
+// nel form di creazione/modifica e nel filtro della lista.
+// ============================================================
+async function loadCategories() {
+  // Chiama GET /categories
+  const data = await api('GET','/categories');
+
+  // Esce se la risposta non è valida
+  if (!data?.success) return;
+
+  // Salva le categorie in memoria per uso futuro
+  categories = data.data;
+
+  // Genera le opzioni HTML per ogni categoria
+  const opts = categories.map(c=>`<option value="${c.id}">${c.icon} ${c.name}</option>`).join('');
+
+  // Popola il select nel form di creazione/modifica spesa
+  document.getElementById('f-cat').innerHTML = opts;
+
+  // Popola il select nel filtro della lista spese (con opzione "tutte" in cima)
+  document.getElementById('filter-cat').innerHTML = `<option value="">Tutte le categorie</option>`+opts;
+}
+
+// ============================================================
+// Funzione: loadIncomeCategories()
+// Carica le categorie di ENTRATA dall'API e popola i select
+// nel form e nel filtro della lista entrate.
+// ============================================================
+async function loadIncomeCategories() {
+  // Chiama GET /income-categories
+  const data = await api('GET','/income-categories');
+
+  // Esce se la risposta non è valida
+  if (!data?.success) return;
+
+  // Salva le categorie entrate in memoria
+  incomeCategories = data.data;
+
+  // Genera le opzioni HTML
+  const opts = incomeCategories.map(c=>`<option value="${c.id}">${c.icon} ${c.name}</option>`).join('');
+
+  // Popola il select nel form entrate
+  document.getElementById('if-cat').innerHTML = opts;
+
+  // Popola il select nel filtro lista entrate
+  document.getElementById('inc-filter-cat').innerHTML = `<option value="">Tutte le categorie</option>`+opts;
+}
+
+// ============================================================
+// SEZIONE: DASHBOARD
+// ============================================================
+
+// ============================================================
+// Funzione: loadDashboard()
+// Carica tutte le statistiche per la dashboard in parallelo:
+// riepilogo mensile/annuale, dati mensili, categorie.
+// ============================================================
+async function loadDashboard() {
+  // Anno e mese correnti per le query
+  const year = new Date().getFullYear();
+  const month = new Date().toISOString().slice(0,7); // YYYY-MM
+
+  // Esegue tre chiamate API in parallelo (Promise.all) per velocità
+  const [summary, monthly, catData] = await Promise.all([
+    api('GET',`/stats/summary?year=${year}`),   // Totali mese corrente e anno
+    api('GET',`/stats/monthly?year=${year}`),   // Dati per grafico a barre mensili
+    api('GET',`/stats/category?month=${month}`) // Dati per grafici per categoria
+  ]);
+
+  // Aggiorna le card di riepilogo se la risposta è valida
+  if (summary?.success) {
+    const d = summary.data; // Dati del riepilogo
+
+    // Aggiorna card entrate mese
+    document.getElementById('stat-inc').textContent = fmt(d.month_incomes);
+    document.getElementById('stat-inc-count').textContent = d.month_income_count+' entrate';
+
+    // Aggiorna card spese mese
+    document.getElementById('stat-exp').textContent = fmt(d.month_expenses);
+    document.getElementById('stat-exp-count').textContent = d.month_expense_count+' spese';
+
+    // Aggiorna card saldo mese (con segno - se negativo)
+    const bal = d.month_balance;
+    const balEl = document.getElementById('stat-balance');
+    balEl.textContent = (bal<0?'-':'')+fmt(Math.abs(bal)); // Aggiunge '-' se il saldo è negativo
+    balEl.className = 'stat-value '+(bal>=0?'green':'red'); // Verde se positivo, rosso se negativo
+    document.getElementById('stat-balance-sub').textContent = bal>=0?'Risparmio del mese':'Deficit del mese';
+    document.getElementById('balance-card').className = 'stat-card '+(bal>=0?'balance-pos':'balance-neg'); // Bordo colorato
+
+    // Aggiorna card saldo anno
+    document.getElementById('stat-year-label').textContent = year;
+    const yBal = d.year_balance;
+    const yEl = document.getElementById('stat-year-balance');
+    yEl.textContent = (yBal<0?'-':'')+fmt(Math.abs(yBal)); // Segno - se saldo annuale negativo
+    yEl.className = 'stat-value '+(yBal>=0?'green':'red');
+  }
+
+  // Imposta l'anno nel titolo del grafico mensile
+  document.getElementById('chart-year').textContent = year;
+
+  // Renderizza il grafico a barre doppie (entrate vs spese per mese)
+  if (monthly?.success) renderGroupedMonthChart(monthly.data.months,'month-chart');
+
+  // Renderizza i due grafici a barre orizzontali per categoria
+  if (catData?.success) {
+    renderCatChart(catData.data.expense_categories,'cat-exp-chart');       // Spese per categoria
+    renderCatChart(catData.data.income_categories,'cat-inc-chart',true);   // Entrate per categoria (verde)
+  }
+}
+
+// ============================================================
+// Funzione: renderGroupedMonthChart()
+// Renderizza il grafico a barre doppie (entrate verde + spese rosse)
+// per ogni mese dell'anno nel contenitore specificato.
+// months: array di oggetti {month, incomes, expenses}
+// cid: ID del contenitore HTML
+// ============================================================
+function renderGroupedMonthChart(months, cid) {
+  // Nomi brevi dei mesi in italiano
+  const names = ['Gen','Feb','Mar','Apr','Mag','Giu','Lug','Ago','Set','Ott','Nov','Dic'];
+
+  // Costruisce un dizionario per accesso rapido per numero di mese (es. "04" → dati aprile)
+  const byMonth = {};
+  months.forEach(m=>{ byMonth[m.month.slice(5,7)] = m; }); // Estrae solo MM da YYYY-MM
+
+  // Trova il valore massimo tra tutti i valori (serve per scalare le barre)
+  const allVals = months.flatMap(m=>[m.expenses||0, m.incomes||0]);
+  const max = Math.max(...allVals, 1); // Minimo 1 per evitare divisione per zero
+
+  // Genera l'HTML per tutti e 12 i mesi
+  document.getElementById(cid).innerHTML = Array.from({length:12},(_,i)=>{
+    const key = String(i+1).padStart(2,'0'); // Numero mese con zero iniziale (es. "04")
+    const m = byMonth[key] || {expenses:0, incomes:0}; // Usa 0 se il mese non ha dati
+
+    // Calcola l'altezza in pixel delle due barre (scala 0-80px rispetto al massimo)
+    const pH = Math.round(((m.incomes||0)/max)*80);  // Altezza barra entrate (verde)
+    const eH = Math.round(((m.expenses||0)/max)*80); // Altezza barra spese (rosso)
+
+    // Restituisce l'HTML della colonna del mese con le due barre affiancate
+    return `<div class="month-col">
+      <div class="month-bars">
+        <div class="month-bar" style="height:${pH}px;background:var(--success);opacity:${pH?1:0.1}"></div>
+        <div class="month-bar" style="height:${eH}px;background:var(--danger);opacity:${eH?1:0.1}"></div>
+      </div>
+      <div class="month-name">${names[i]}</div>
+    </div>`;
+  }).join('');
+}
+
+// ============================================================
+// Funzione: renderCatChart()
+// Renderizza il grafico a barre orizzontali per categoria.
+// Mostra solo le categorie con almeno una registrazione.
+// isIncome: true = usa colore verde per tutte le barre
+// ============================================================
+function renderCatChart(cats, cid, isIncome=false) {
+  // Filtra le categorie che hanno almeno un importo > 0
+  const with_data = cats.filter(c=>c.total>0);
+
+  // Trova il valore massimo per scalare le barre al 100%
+  const max = Math.max(...with_data.map(c=>c.total),1);
+
+  // Ottiene il contenitore HTML
+  const el = document.getElementById(cid);
+
+  // Se non ci sono dati, mostra un messaggio placeholder
+  if (!with_data.length){el.innerHTML='<p style="color:var(--text-muted);text-align:center;padding:20px">Nessun dato</p>';return;}
+
+  // Genera l'HTML per ogni barra orizzontale
+  el.innerHTML = with_data.map(c=>`
+    <div class="bar-row">
+      <div class="bar-label">${c.category.icon} ${c.category.name}</div>
+      <div class="bar-track"><div class="bar-fill" style="width:${(c.total/max*100).toFixed(1)}%;background:${isIncome?'var(--success)':c.category.color}"></div></div>
+      <div class="bar-val">${fmt(c.total)}</div>
+    </div>`).join('');
+}
+
+// ============================================================
+// SEZIONE: SPESE
+// ============================================================
+
+// ============================================================
+// Funzione: loadExpenses()
+// Resetta la paginazione e ricarica la lista spese.
+// Chiamata quando cambiano i filtri.
+// ============================================================
+async function loadExpenses(){expPage=1;renderExpenses();}
+
+// ============================================================
+// Funzione: renderExpenses()
+// Chiama l'API con i filtri correnti e renderizza la lista spese.
+// Gestisce anche la paginazione.
+// ============================================================
+async function renderExpenses(){
+  // Legge i valori dei filtri dall'interfaccia
+  const month=document.getElementById('filter-month').value;
+  const cat=document.getElementById('filter-cat').value;
+  const search=document.getElementById('filter-search').value;
+
+  // Costruisce la query string con i parametri di paginazione
+  let qs=`?page=${expPage}&per_page=15`;
+  if(month) qs+=`&month=${month}`;                             // Aggiunge filtro mese se presente
+  if(cat)   qs+=`&category_id=${cat}`;                         // Aggiunge filtro categoria se presente
+  if(search) qs+=`&search=${encodeURIComponent(search)}`;      // Aggiunge ricerca testuale (URL encoded)
+
+  // Chiama l'API con i filtri
+  const data = await api('GET','/expenses'+qs);
+  if(!data?.success) return; // Esce se risposta non valida
+
+  const list = document.getElementById('expense-list');
+
+  // Mostra messaggio vuoto se non ci sono risultati
+  if(!data.data.expenses.length){
+    list.innerHTML=`<div class="empty-state"><div class="icon">📭</div><p>Nessuna spesa trovata</p></div>`;
+  } else {
+    // Genera l'HTML per ogni riga della lista spese
+    list.innerHTML = data.data.expenses.map(e=>`
+      <div class="expense-item">
+        <div class="cat-badge" style="background:${e.category.color}22">${e.category.icon}</div>
+        <div class="expense-info">
+          <div class="expense-desc">${e.description}</div>
+          <div class="expense-meta">${e.category.name} · ${fmtDate(e.date)}</div>
+        </div>
+        <div class="expense-amount" style="color:var(--danger)">-${fmt(e.amount)}</div>
+        <div class="expense-actions">
+          <button class="btn btn-ghost btn-sm" onclick="editExpense(${e.id})">✏️</button>
+          <button class="btn btn-danger btn-sm" onclick="deleteExpense(${e.id},'${e.description.replace(/'/g,"\\'")}')">🗑️</button>
+        </div>
+      </div>`).join('');
+  }
+
+  // Renderizza la paginazione in fondo alla lista
+  const p=data.data.pagination;
+  const pg=document.getElementById('exp-pagination');
+  if(p.pages<=1){pg.innerHTML='';return;} // Nasconde la paginazione se c'è solo una pagina
+  pg.innerHTML=Array.from({length:p.pages},(_,i)=>`<span class="page-num${i+1===expPage?' active':''}" onclick="goExpPage(${i+1})">${i+1}</span>`).join('');
+}
+
+// Cambia pagina nella lista spese e ricarica
+function goExpPage(p){expPage=p;renderExpenses();}
+
+// Debounce della ricerca: aspetta 400ms dall'ultimo tasto prima di cercare
+function debounceSearch(){clearTimeout(searchTimer);searchTimer=setTimeout(loadExpenses,400);}
+
+// ============================================================
+// SEZIONE: ENTRATE
+// ============================================================
+
+// Resetta la paginazione e ricarica le entrate
+async function loadIncomes(){incPage=1;renderIncomes();}
+
+// ============================================================
+// Funzione: renderIncomes()
+// Identica a renderExpenses() ma per le entrate.
+// ============================================================
+async function renderIncomes(){
+  const month=document.getElementById('inc-filter-month').value;
+  const cat=document.getElementById('inc-filter-cat').value;
+  const search=document.getElementById('inc-filter-search').value;
+  let qs=`?page=${incPage}&per_page=15`;
+  if(month) qs+=`&month=${month}`;
+  if(cat)   qs+=`&category_id=${cat}`;
+  if(search) qs+=`&search=${encodeURIComponent(search)}`;
+  const data = await api('GET','/incomes'+qs);
+  if(!data?.success) return;
+  const list = document.getElementById('income-list');
+  if(!data.data.incomes.length){
+    list.innerHTML=`<div class="empty-state"><div class="icon">💵</div><p>Nessuna entrata trovata</p></div>`;
+  } else {
+    // Genera HTML per le righe entrate (importo in verde con "+")
+    list.innerHTML = data.data.incomes.map(e=>`
+      <div class="expense-item">
+        <div class="cat-badge" style="background:${e.category.color}22">${e.category.icon}</div>
+        <div class="expense-info">
+          <div class="expense-desc">${e.description}</div>
+          <div class="expense-meta">${e.category.name} · ${fmtDate(e.date)}</div>
+        </div>
+        <div class="expense-amount" style="color:var(--success)">+${fmt(e.amount)}</div>
+        <div class="expense-actions">
+          <button class="btn btn-ghost btn-sm" onclick="editIncome(${e.id})">✏️</button>
+          <button class="btn btn-danger btn-sm" onclick="deleteIncome(${e.id},'${e.description.replace(/'/g,"\\'")}')">🗑️</button>
+        </div>
+      </div>`).join('');
+  }
+
+  // Paginazione entrate
+  const p=data.data.pagination;
+  const pg=document.getElementById('inc-pagination');
+  if(p.pages<=1){pg.innerHTML='';return;}
+  pg.innerHTML=Array.from({length:p.pages},(_,i)=>`<span class="page-num${i+1===incPage?' active':''}" onclick="goIncPage(${i+1})">${i+1}</span>`).join('');
+}
+
+// Cambia pagina nelle entrate
+function goIncPage(p){incPage=p;renderIncomes();}
+
+// Debounce ricerca entrate
+function debounceIncSearch(){clearTimeout(incSearchTimer);incSearchTimer=setTimeout(loadIncomes,400);}
+
+// ============================================================
+// SEZIONE: MODAL SPESE
+// ============================================================
+
+// ============================================================
+// Funzione: openExpenseModal()
+// Apre il modal per creare o modificare una spesa.
+// expense: null = nuova spesa, oggetto = modifica esistente.
+// ============================================================
+function openExpenseModal(expense=null){
+  // Salva l'ID della spesa in modifica (null se nuova)
+  editingExpId = expense?expense.id:null;
+
+  // Imposta il titolo del modal in base alla modalità
+  document.getElementById('exp-modal-title').textContent = expense?'Modifica spesa':'Nuova spesa';
+
+  // Pre-compila i campi se stiamo modificando, altrimenti li svuota
+  document.getElementById('f-amount').value = expense?expense.amount:'';
+  document.getElementById('f-desc').value   = expense?expense.description:'';
+  document.getElementById('f-cat').value    = expense?expense.category.id:(categories[0]?.id||''); // Prima categoria come default
+  document.getElementById('f-date').value   = expense?expense.date:new Date().toISOString().slice(0,10); // Data di oggi come default
+  document.getElementById('f-notes').value  = expense?(expense.notes||''):'';
+
+  // Mostra il modal (rimuove la classe hidden)
+  document.getElementById('expense-modal').classList.remove('hidden');
+}
+
+// Chiude il modal spese nascondendolo
+function closeExpenseModal(){document.getElementById('expense-modal').classList.add('hidden');}
+
+// ============================================================
+// Funzione: saveExpense()
+// Legge i dati dal form modal e chiama l'API per creare
+// o aggiornare la spesa in base a editingExpId.
+// ============================================================
+async function saveExpense(){
+  // Raccoglie i dati dal form in un oggetto
+  const body={amount:parseFloat(document.getElementById('f-amount').value),description:document.getElementById('f-desc').value.trim(),category_id:parseInt(document.getElementById('f-cat').value),expense_date:document.getElementById('f-date').value,notes:document.getElementById('f-notes').value.trim()||null};
+
+  // Validazione base lato client (prima di chiamare l'API)
+  if(!body.description||isNaN(body.amount)||body.amount<=0){toast('Compila tutti i campi obbligatori','error');return;}
+
+  // Chiama PUT se stiamo modificando, POST se stiamo creando
+  const data = editingExpId ? await api('PUT',`/expenses/${editingExpId}`,body) : await api('POST','/expenses',body);
+
+  // Mostra errore se la risposta non è ok
+  if(!data?.success){toast(data?.message||'Errore','error');return;}
+
+  // Notifica successo e aggiorna la lista
+  toast(editingExpId?'Spesa aggiornata':'Spesa aggiunta');
+  closeExpenseModal(); // Chiude il modal
+  renderExpenses();    // Ricarica la lista
+}
+
+// ============================================================
+// Funzione: editExpense()
+// Carica i dati di una spesa dall'API e apre il modal in
+// modalità modifica.
+// ============================================================
+async function editExpense(id){
+  const data = await api('GET',`/expenses/${id}`); // Carica i dati dalla API
+  if(data?.success) openExpenseModal(data.data);    // Apre il modal con i dati precompilati
+}
+
+// ============================================================
+// Funzione: deleteExpense()
+// Chiede conferma all'utente e poi elimina la spesa.
+// ============================================================
+async function deleteExpense(id,desc){
+  // Mostra dialog di conferma nativo del browser
+  if(!confirm(`Eliminare "${desc}"?`)) return;
+
+  // Chiama DELETE /expenses/{id}
+  const data = await api('DELETE',`/expenses/${id}`);
+
+  // Aggiorna la lista se eliminato con successo
+  if(data?.success){toast('Spesa eliminata');renderExpenses();}
+}
+
+// ============================================================
+// SEZIONE: MODAL ENTRATE
+// (struttura identica al modal spese ma per le entrate)
+// ============================================================
+
+// Apre il modal entrate in modalità creazione o modifica
+function openIncomeModal(income=null){
+  editingIncId = income?income.id:null;
+  document.getElementById('inc-modal-title').textContent = income?'Modifica entrata':'Nuova entrata';
+  document.getElementById('if-amount').value = income?income.amount:'';
+  document.getElementById('if-desc').value   = income?income.description:'';
+  document.getElementById('if-cat').value    = income?income.category.id:(incomeCategories[0]?.id||'');
+  document.getElementById('if-date').value   = income?income.date:new Date().toISOString().slice(0,10);
+  document.getElementById('if-notes').value  = income?(income.notes||''):'';
+  document.getElementById('income-modal').classList.remove('hidden');
+}
+
+// Chiude il modal entrate
+function closeIncomeModal(){document.getElementById('income-modal').classList.add('hidden');}
+
+// Salva l'entrata (crea o aggiorna) chiamando l'API
+async function saveIncome(){
+  const body={amount:parseFloat(document.getElementById('if-amount').value),description:document.getElementById('if-desc').value.trim(),category_id:parseInt(document.getElementById('if-cat').value),income_date:document.getElementById('if-date').value,notes:document.getElementById('if-notes').value.trim()||null};
+  if(!body.description||isNaN(body.amount)||body.amount<=0){toast('Compila tutti i campi obbligatori','error');return;}
+  const data = editingIncId ? await api('PUT',`/incomes/${editingIncId}`,body) : await api('POST','/incomes',body);
+  if(!data?.success){toast(data?.message||'Errore','error');return;}
+  toast(editingIncId?'Entrata aggiornata':'Entrata aggiunta');
+  closeIncomeModal(); renderIncomes();
+}
+
+// Carica i dati di un'entrata e apre il modal in modifica
+async function editIncome(id){
+  const data = await api('GET',`/incomes/${id}`);
+  if(data?.success) openIncomeModal(data.data);
+}
+
+// Chiede conferma ed elimina un'entrata
+async function deleteIncome(id,desc){
+  if(!confirm(`Eliminare "${desc}"?`)) return;
+  const data = await api('DELETE',`/incomes/${id}`);
+  if(data?.success){toast('Entrata eliminata');renderIncomes();}
+}
+
+// ============================================================
+// SEZIONE: STATISTICHE
+// ============================================================
+
+// ============================================================
+// Funzione: populateMonthSel()
+// Popola il selettore dei mesi nella pagina statistiche
+// ============================================================
+
+// ============================================================
+// Funzione: populateYearSel()
+// Popola il selettore degli anni nelle statistiche con tutti
+// gli anni in cui l'utente ha almeno una registrazione.
+// Carica gli anni direttamente dall'API (dinamico).
+// ============================================================
+async function populateYearSel(){
+  const sel = document.getElementById('stats-year-sel');
+  const curYear = new Date().getFullYear(); // Anno corrente
+
+  // Chiede all'API gli anni con dati sia per spese che per entrate, in parallelo
+  const [expData, incData] = await Promise.all([
+    api('GET', '/stats/years'),             // Anni con almeno una spesa
+    api('GET', '/stats/years?type=income')  // Anni con almeno un'entrata
+  ]);
+
+  // Usa un Set per raccogliere gli anni senza duplicati
+  let years = new Set();
+
+  // Aggiunge gli anni delle spese al Set
+  if (expData?.success) expData.data.forEach(y => years.add(y));
+
+  // Aggiunge gli anni delle entrate al Set
+  if (incData?.success) incData.data.forEach(y => years.add(y));
+
+  // Aggiunge sempre l'anno corrente (anche se non ha ancora dati)
+  years.add(curYear);
+
+  // Converte il Set in array e ordina dal più recente al meno recente
+  const sorted = [...years].sort((a,b) => b - a);
+
+  // Genera le opzioni HTML, selezionando l'anno corrente
+  sel.innerHTML = sorted.map(yr => `<option value="${yr}"${yr===curYear?' selected':''}>${yr}</option>`).join('');
+}
+
+// ============================================================
+// Variabile globale per il tipo di confronto (spese o entrate)
+// ============================================================
+let cmpType = 'expenses'; // Tipo attivo nel grafico confronto anni
+let cmpDataCache = null;  // Cache dei dati anno corrente e precedente
+
+// ============================================================
+// Funzione: setCmpType()
+// Cambia il tipo di dato mostrato nel grafico confronto
+// tra "expenses" (spese) e "incomes" (entrate).
+// ============================================================
+function setCmpType(type) {
+  // Aggiorna la variabile globale del tipo selezionato
+  cmpType = type;
+
+  // Aggiorna lo stile attivo sui due bottoni
+  document.getElementById('cmp-btn-exp').className = `type-btn ${type==='expenses'?'active-exp':''}`;
+  document.getElementById('cmp-btn-inc').className = `type-btn ${type==='incomes'?'active-inc':''}`;
+
+  // Ridisegna il grafico confronto con i dati già in cache (senza nuova chiamata API)
+  if (cmpDataCache) renderCompareChart(cmpDataCache.yearA, cmpDataCache.yearB, cmpDataCache.monthsA, cmpDataCache.monthsB);
+}
+
+// ============================================================
+// Funzione: loadStatsYear()
+// Carica e renderizza tutti i grafici della pagina statistiche:
+// 1. Torte per categoria (spese e entrate)
+// 2. Barre doppie mensili (entrate vs spese)
+// 3. Saldo mensile (barre orizzontali verde/rosso)
+// 4. Andamento cumulativo (grafico a linee SVG)
+// 5. Confronto anno corrente vs precedente (barre doppie)
+// ============================================================
+async function loadStatsYear(){
+  // Legge l'anno selezionato nel selettore
+  const year = parseInt(document.getElementById('stats-year-sel').value);
+
+  // Chiama tutte le API necessarie in parallelo per velocità
+  const [monthly, catData, monthlyPrev] = await Promise.all([
+    api('GET', `/stats/monthly?year=${year}`),        // Dati mensili anno selezionato
+    api('GET', `/stats/category?month=${year}-12`),   // Dati categoria anno (usa dicembre come proxy, poi aggrega)
+    api('GET', `/stats/monthly?year=${year - 1}`),    // Dati mensili anno precedente (per confronto)
+  ]);
+
+  if (!monthly?.success) return; // Esce se risposta non valida
+
+  const months   = monthly.data.months;  // Array mesi anno selezionato
+  const names    = ['Gen','Feb','Mar','Apr','Mag','Giu','Lug','Ago','Set','Ott','Nov','Dic'];
+
+  // Costruisce dizionario mese → dati per accesso rapido
+  const byMonth = {};
+  months.forEach(m => { byMonth[m.month.slice(5,7)] = m; });
+
+  // Costruisce array completo 12 mesi (con 0 per i mesi senza dati)
+  const full12 = Array.from({length:12}, (_,i) => {
+    const key = String(i+1).padStart(2,'0');
+    return byMonth[key] || {month:`${year}-${key}`, incomes:0, expenses:0, income_count:0, expense_count:0, balance:0};
+  });
+
+  // 1. GRAFICO A TORTA SPESE PER CATEGORIA
+  // Carica i dati aggregati per categoria sull'intero anno (somma tutti i mesi)
+  const catYear = await api('GET', `/stats/category?month=${year}-01`);
+  // Poi aggrega tutti i mesi per avere i totali annuali
+  const annualCatData = await buildAnnualCategoryTotals(year);
+  if (annualCatData) {
+    renderPieChart(annualCatData.expenses, 'stats-pie-exp', false); // Torta spese
+    renderPieChart(annualCatData.incomes,  'stats-pie-inc', true);  // Torta entrate
+  }
+
+  // 2. BARRE DOPPIE MENSILI
+  renderGroupedMonthChart(months, 'stats-month-chart');
+
+  // 3. SALDO MENSILE
+  // Calcola il saldo (entrate - spese) per ogni mese
+  const balances = full12.map((m,i) => ({
+    name: names[i],
+    bal:  (m.incomes || 0) - (m.expenses || 0)
+  }));
+  const maxAbs = Math.max(...balances.map(b => Math.abs(b.bal)), 1);
+  document.getElementById('stats-balance-chart').innerHTML = balances.map(b => `
+    <div class="bar-row">
+      <div class="bar-label">${b.name}</div>
+      <div class="bar-track" style="height:12px">
+        <div class="bar-fill" style="width:${(Math.abs(b.bal)/maxAbs*100).toFixed(1)}%;background:${b.bal>=0?'var(--success)':'var(--danger)'}"></div>
+      </div>
+      <div class="bar-val" style="color:${b.bal>=0?'var(--success)':'var(--danger)'}">${b.bal>=0?'+':'-'}${fmt(Math.abs(b.bal))}</div>
+    </div>`).join('');
+
+  // 4. ANDAMENTO CUMULATIVO (LINEA SVG)
+  renderCumulativeChart(full12, names);
+
+  // 5. CONFRONTO ANNO CORRENTE VS PRECEDENTE
+  const prevMonths = monthlyPrev?.success ? monthlyPrev.data.months : [];
+  // Salva in cache per poter cambiare tipo senza riscaricare
+  cmpDataCache = { yearA: year, yearB: year-1, monthsA: full12, monthsB: buildFull12(prevMonths, year-1) };
+  document.getElementById('stats-cmp-year-a').textContent = year;
+  document.getElementById('stats-cmp-year-b').textContent = year-1;
+  renderCompareChart(year, year-1, cmpDataCache.monthsA, cmpDataCache.monthsB);
+}
+
+// ============================================================
+// Funzione: buildFull12()
+// Costruisce un array di 12 mesi con dati o 0 per i mesi mancanti.
+// ============================================================
+function buildFull12(months, year) {
+  // Costruisce un dizionario con chiave = numero mese (es. "04") per accesso rapido
+  const byMonth = {};
+  months.forEach(m => { byMonth[m.month.slice(5,7)] = m; }); // Estrae MM da YYYY-MM
+
+  // Genera esattamente 12 elementi: uno per ogni mese dell'anno
+  return Array.from({length:12}, (_,i) => {
+    const key = String(i+1).padStart(2,'0'); // Numero mese con zero iniziale (es. "04")
+    // Usa i dati reali se esistono, altrimenti un oggetto con tutti i valori a 0
+    return byMonth[key] || {month:`${year}-${key}`, incomes:0, expenses:0, balance:0};
+  });
+}
+
+// ============================================================
+// Funzione: buildAnnualCategoryTotals()
+// Aggrega i totali per categoria su tutti i 12 mesi dell'anno
+// facendo chiamate mensili e sommando i valori.
+// ============================================================
+async function buildAnnualCategoryTotals(year) {
+  // Costruisce 12 chiamate API (una per mese) da eseguire in parallelo
+  const promises = Array.from({length:12}, (_,i) => {
+    const month = `${year}-${String(i+1).padStart(2,'0')}`; // Es. "2026-04" per aprile
+    return api('GET', `/stats/category?month=${month}`);     // Chiamata API per il mese
+  });
+
+  // Esegue tutte le 12 chiamate in parallelo e aspetta i risultati
+  const results = await Promise.all(promises);
+
+  // Mappe per accumulare i totali per categoria (chiave = ID categoria)
+  const expMap = {}, incMap = {};
+
+  // Itera i risultati di tutti i 12 mesi
+  results.forEach(r => {
+    if (!r?.success) return; // Salta i mesi senza dati o con errori
+
+    // Somma le spese per ogni categoria di spesa del mese
+    r.data.expense_categories.forEach(c => {
+      // Inizializza la voce se è la prima volta che vediamo questa categoria
+      if (!expMap[c.category.id]) expMap[c.category.id] = {...c, total: 0};
+      expMap[c.category.id].total += c.total; // Aggiunge il totale mensile al cumulativo
+    });
+
+    // Somma le entrate per ogni categoria di entrata del mese
+    r.data.income_categories.forEach(c => {
+      if (!incMap[c.category.id]) incMap[c.category.id] = {...c, total: 0};
+      incMap[c.category.id].total += c.total; // Aggiunge il totale mensile al cumulativo
+    });
+  });
+
+  return {
+    // Filtra le categorie con almeno una registrazione e ordina per importo decrescente
+    expenses: Object.values(expMap).filter(c => c.total > 0).sort((a,b) => b.total - a.total),
+    incomes:  Object.values(incMap).filter(c => c.total > 0).sort((a,b) => b.total - a.total),
+  };
+}
+
+// ============================================================
+// Funzione: renderPieChart()
+// Disegna un grafico a torta SVG con legenda per le categorie.
+// cats: array [{category:{name,icon,color}, total}]
+// containerId: ID del div contenitore
+// isIncome: true = usa colore verde per tutte le fette
+// ============================================================
+function renderPieChart(cats, containerId, isIncome) {
+  // Recupera il div contenitore dal DOM usando l'ID passato come parametro
+  const el = document.getElementById(containerId);
+
+  // Se non ci sono categorie con dati, mostra un messaggio e termina
+  if (!cats.length) {
+    el.innerHTML = '<p style="color:var(--text-muted);text-align:center;padding:20px;width:100%">Nessun dato per quest\'anno</p>';
+    return; // Esce dalla funzione senza disegnare nulla
+  }
+
+  const total = cats.reduce((s, c) => s + c.total, 0); // Somma di tutti gli importi (per calcolare le %)
+  const size  = 160;                                    // Lato del quadrato SVG in pixel
+  const cx    = size/2;                                 // Coordinata X del centro della torta
+  const cy    = size/2;                                 // Coordinata Y del centro della torta
+  const r     = 60;                                     // Raggio esterno della torta in pixel
+
+  let svgPaths = ''; // Stringa che accumula i path SVG di tutte le fette
+  let angle    = -Math.PI / 2; // Angolo di partenza: -90° = ore 12 (parte dall'alto)
+
+  // Genera una fetta SVG per ogni categoria
+  cats.forEach(c => {
+    const pct    = c.total / total;              // Percentuale di questa categoria
+    const sweep  = pct * 2 * Math.PI;            // Ampiezza angolare della fetta in radianti
+    const x1     = cx + r * Math.cos(angle);     // Punto di inizio arco (x)
+    const y1     = cy + r * Math.sin(angle);     // Punto di inizio arco (y)
+    angle += sweep;                              // Aggiorna l'angolo per la prossima fetta
+    const x2     = cx + r * Math.cos(angle);     // Punto di fine arco (x)
+    const y2     = cy + r * Math.sin(angle);     // Punto di fine arco (y)
+    const large  = sweep > Math.PI ? 1 : 0;      // Flag "arco grande" per SVG (>180°)
+    const color  = isIncome ? '#5cc9a0' : c.category.color; // Colore fetta
+    // Disegna la fetta come path SVG: M=sposta, L=linea, A=arco, Z=chiudi
+    svgPaths += `<path d="M${cx},${cy} L${x1},${y1} A${r},${r} 0 ${large},1 ${x2},${y2} Z" fill="${color}" opacity="0.85" stroke="var(--surface)" stroke-width="1.5"/>`;
+  });
+
+  // Cerchio bianco al centro per effetto "donut"
+  svgPaths += `<circle cx="${cx}" cy="${cy}" r="28" fill="var(--surface2)"/>`;
+
+  // Testo centrale con il totale annuale
+  svgPaths += `<text x="${cx}" y="${cy-4}" text-anchor="middle" font-size="9" fill="var(--text-muted)" font-family="DM Sans">Totale</text>`;
+  svgPaths += `<text x="${cx}" y="${cy+10}" text-anchor="middle" font-size="10" fill="var(--text)" font-weight="600" font-family="DM Sans">${fmt(total).replace('€','€')}</text>`;
+
+  // Costruisce la legenda accanto alla torta
+  const legend = cats.slice(0,6).map(c => { // Mostra max 6 categorie in legenda
+    const pct = ((c.total / total) * 100).toFixed(1);
+    const color = isIncome ? '#5cc9a0' : c.category.color;
+    return `<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
+      <span style="width:10px;height:10px;border-radius:2px;background:${color};flex-shrink:0;opacity:0.85"></span>
+      <span style="font-size:12px;color:var(--text-muted);flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${c.category.icon} ${c.category.name}</span>
+      <span style="font-size:12px;font-weight:600;color:var(--text);white-space:nowrap">${pct}%</span>
+    </div>`;
+  }).join('');
+
+  // Inserisce torta SVG + legenda nel contenitore
+  el.innerHTML = `
+    <svg width="${size}" height="${size}" viewBox="0 0 ${size} ${size}" style="flex-shrink:0">${svgPaths}</svg>
+    <div style="flex:1;min-width:140px;">${legend}</div>`;
+}
+
+// ============================================================
+// Funzione: renderCumulativeChart()
+// Disegna un grafico a linee SVG con l'andamento cumulativo
+// di entrate, spese e saldo nel corso dell'anno.
+// ============================================================
+function renderCumulativeChart(full12, names) {
+  const svg = document.getElementById('stats-cumulative-chart');
+  const W = svg.clientWidth || 600; // Larghezza effettiva del contenitore
+  const H = 180;                    // Altezza area grafico in pixel
+  const padL = 72, padR = 16, padT = 12, padB = 28; // Margini interni
+
+  // Calcola i valori cumulativi mese per mese
+  let cumInc = 0, cumExp = 0;
+  const points = full12.map((m, i) => {
+    cumInc += m.incomes  || 0; // Somma progressiva entrate
+    cumExp += m.expenses || 0; // Somma progressiva spese
+    return { i, cumInc, cumExp, cumBal: cumInc - cumExp }; // Saldo = entrate - spese
+  });
+
+  // Trova i valori min e max per la scala Y del grafico
+  const allVals = points.flatMap(p => [p.cumInc, p.cumExp, p.cumBal]);
+  const minV = Math.min(...allVals, 0);
+  const maxV = Math.max(...allVals, 1);
+  const range = maxV - minV || 1;
+
+  // Funzioni di conversione da valore a coordinate pixel
+  const xOf = i => padL + (i / 11) * (W - padL - padR); // X: distribuisce i 12 punti
+  const yOf = v => padT + (1 - (v - minV) / range) * H;  // Y: invertito (alto=grande)
+
+  // Costruisce le stringhe di punti per i tre poligoni/linee
+  const ptsInc = points.map(p => `${xOf(p.i).toFixed(1)},${yOf(p.cumInc).toFixed(1)}`).join(' ');
+  const ptsExp = points.map(p => `${xOf(p.i).toFixed(1)},${yOf(p.cumExp).toFixed(1)}`).join(' ');
+  const ptsBal = points.map(p => `${xOf(p.i).toFixed(1)},${yOf(p.cumBal).toFixed(1)}`).join(' ');
+
+  // Genera le linee guida orizzontali (4 livelli)
+  let gridLines = '';
+  for (let k = 0; k <= 4; k++) {
+    const v  = minV + (range / 4) * k;                  // Valore corrispondente
+    const y  = yOf(v).toFixed(1);
+    const lbl = fmt(v).replace('€',''); // Etichetta asse Y senza simbolo €
+    gridLines += `<line x1="${padL}" y1="${y}" x2="${W - padR}" y2="${y}" stroke="var(--border)" stroke-width="0.5"/>`;
+    gridLines += `<text x="${padL - 4}" y="${parseFloat(y)+4}" text-anchor="end" font-size="9" fill="var(--text-muted)" font-family="DM Sans">${lbl}</text>`;
+  }
+
+  // Genera le etichette dell'asse X (nomi mesi)
+  const xLabels = names.map((n,i) =>
+    `<text x="${xOf(i).toFixed(1)}" y="${padT + H + padB - 4}" text-anchor="middle" font-size="9" fill="var(--text-muted)" font-family="DM Sans">${n}</text>`
+  ).join('');
+
+  // Genera i cerchietti sui punti del saldo
+  const dots = points.map(p =>
+    `<circle cx="${xOf(p.i).toFixed(1)}" cy="${yOf(p.cumBal).toFixed(1)}" r="3" fill="${p.cumBal>=0?'var(--accent)':'var(--danger)'}" stroke="var(--surface)" stroke-width="1.5"/>`
+  ).join('');
+
+  // Compone il contenuto SVG completo
+  svg.setAttribute('height', padT + H + padB);
+  svg.innerHTML = `
+    ${gridLines}
+    ${xLabels}
+    <polyline points="${ptsInc}" fill="none" stroke="var(--success)" stroke-width="2" stroke-linejoin="round"/>
+    <polyline points="${ptsExp}" fill="none" stroke="var(--danger)" stroke-width="2" stroke-linejoin="round"/>
+    <polyline points="${ptsBal}" fill="none" stroke="var(--accent)" stroke-width="2" stroke-dasharray="5,3" stroke-linejoin="round"/>
+    ${dots}`;
+}
+
+// ============================================================
+// Funzione: renderCompareChart()
+// Disegna il grafico di confronto tra anno selezionato
+// e anno precedente, con barre affiancate per mese.
+// Usa la variabile globale cmpType per scegliere spese/entrate.
+// ============================================================
+function renderCompareChart(yearA, yearB, monthsA, monthsB) {
+  // Nomi brevi dei mesi in italiano per le etichette del grafico
+  const names = ['Gen','Feb','Mar','Apr','Mag','Giu','Lug','Ago','Set','Ott','Nov','Dic'];
+
+  // Campo da leggere dagli oggetti mese: 'expenses' o 'incomes' in base al tipo selezionato
+  const field = cmpType;
+
+  // Estrae i valori numerici per ogni mese dai due anni
+  const valsA = monthsA.map(m => m[field] || 0); // Valori anno selezionato (0 se mese senza dati)
+  const valsB = monthsB.map(m => m[field] || 0); // Valori anno precedente (0 se mese senza dati)
+
+  // Trova il valore massimo tra tutti i mesi dei due anni (usato per scalare le barre al 100%)
+  const maxV = Math.max(...valsA, ...valsB, 1); // Minimo 1 per evitare divisione per zero
+
+  // Genera l'HTML per ogni mese (una riga con due barre affiancate)
+  document.getElementById('stats-compare-chart').innerHTML = names.map((n, i) => {
+    const a    = valsA[i];                         // Valore del mese nell'anno selezionato
+    const b    = valsB[i];                         // Valore del mese nell'anno precedente
+    const pA   = (a / maxV * 100).toFixed(1);      // Larghezza barra A in percentuale
+    const pB   = (b / maxV * 100).toFixed(1);      // Larghezza barra B in percentuale
+    const diff = a - b;                            // Differenza assoluta tra i due anni
+    const sign = diff >= 0 ? '+' : '-';            // Prefisso "+" se aumento, "-" se diminuzione
+
+    // Logica colore differenza: per le spese meno è meglio (verde), per le entrate più è meglio (verde)
+    const diffColor = cmpType === 'expenses'
+      ? (diff <= 0 ? 'var(--success)' : 'var(--danger)')  // Spese: riduzione = verde, aumento = rosso
+      : (diff >= 0 ? 'var(--success)' : 'var(--danger)'); // Entrate: aumento = verde, riduzione = rosso
+
+    // Genera il blocco HTML di ogni mese con: nome mese, differenza colorata, due barre
+    return `<div style="margin-bottom:12px;">
+      <div style="display:flex;justify-content:space-between;margin-bottom:4px;">
+        <span style="font-size:12px;color:var(--text-muted);width:32px">${n}</span>
+        <!-- Differenza con segno e colore (verde=miglioramento, rosso=peggioramento) -->
+        <span style="font-size:11px;color:${diffColor};font-weight:600;">${sign}${fmt(Math.abs(diff))}</span>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:3px;">
+        <!-- Barra anno selezionato (colore oro/accent) -->
+        <div style="display:flex;align-items:center;gap:8px;">
+          <span style="font-size:10px;color:var(--text-muted);width:28px">${yearA}</span>
+          <div style="flex:1;height:8px;background:var(--surface2);border-radius:4px;overflow:hidden;">
+            <div style="width:${pA}%;height:100%;background:var(--accent);border-radius:4px;transition:width .5s;"></div>
+          </div>
+          <span style="font-size:11px;color:var(--text);width:80px;text-align:right">${fmt(a)}</span>
+        </div>
+        <!-- Barra anno precedente (colore grigio/border) -->
+        <div style="display:flex;align-items:center;gap:8px;">
+          <span style="font-size:10px;color:var(--text-muted);width:28px">${yearB}</span>
+          <div style="flex:1;height:8px;background:var(--surface2);border-radius:4px;overflow:hidden;">
+            <div style="width:${pB}%;height:100%;background:var(--border);border-radius:4px;transition:width .5s;"></div>
+          </div>
+          <span style="font-size:11px;color:var(--text-muted);width:80px;text-align:right">${fmt(b)}</span>
+        </div>
+      </div>
+    </div>`;
+  }).join(''); // Unisce tutti i blocchi mese in un'unica stringa HTML
+}
+
+// ============================================================
+// SEZIONE: INIZIALIZZAZIONE
+// ============================================================
+
+// ============================================================
+// Evento: window.onload
+// Eseguito quando la pagina HTML è completamente caricata.
+// Tenta di ripristinare la sessione con il token salvato.
+// Se non valido, mostra la schermata di login.
+// ============================================================
+window.onload = async () => {
+  // Verifica il token salvato in localStorage
+  if(!(await checkAuth())) {
+    // Nessuna sessione valida: mostra la schermata di login
+    document.getElementById('auth-section').classList.remove('hidden');
+  }
+  // Se checkAuth() ha successo, l'app è già stata inizializzata da initApp()
+};
+</script>
+</body>
+</html>
