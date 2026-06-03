@@ -64,7 +64,7 @@ Abbiamo effettuato tutti i test con POSTMAN.
 ![postman_6](images/postman/postman_6.png)
 ![postman_7](images/postman/postman_7.png)
 ![postman_8](images/postman/postman_8.png)
-# Entrate
+## Entrate
 ![postman_9](images/postman/postman_9.png)
 ![postman_10](images/postman/postman_10.png)
 ![postman_11](images/postman/postman_11.png)
