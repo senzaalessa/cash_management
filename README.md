@@ -7,6 +7,7 @@
 - 🛠️ [Endpoints](#-endpoints)
 - 💾 [Installazione](#-installazione)
 - 📸 [Sistema avviato](#-sistema-avviato)
+- 📬 [Test effettuati](#-test-effettuati)
 ## 📝 Descrizione
 Il progetto consiste nella realizzazione di un web service per la gestione delle spese che ha l’obiettivo di permettere agli utenti di tracciare, organizzare e analizzare le proprie uscite in modo semplice e veloce. Il web service permetterà di registrare nuove spese e entrate, consultare lo storico e ottenere riepiloghi desiderati dall'utente.
 ## ⚙️ Funzionalità
@@ -47,3 +48,4 @@ A questo punto l’utente può:
 ![statistiche_4](images/statistiche_4.png)
 ![statistiche_5](images/statistiche_5.png)
 ![uscita](images/uscita.png)
+## 📬 Test effettuati
