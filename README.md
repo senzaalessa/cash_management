@@ -23,6 +23,8 @@ Il progetto consiste nella realizzazione di un web service per la gestione delle
 ## 🛠️ Endpoints
 ![endpoints](images/progettazione/endpoints.png)
 ## 💾 Installazione
+`Tutte le istruzione per l'installazione sono nella progettazione.`
+
 Dopo aver scaricato il sistema, configurato il database e il server web, il sistema può essere
 eseguito tramite browser.
 
@@ -52,3 +54,21 @@ A questo punto l’utente può:
 Abbiamo effettuato tutti i test con POSTMAN.
 ## Configurazione
 ![postman_1](images/postman/postman_1.png)
+## Registrazione
+![postman_2](images/postman/postman_2.png)
+![postman_3](images/postman/postman_3.png)
+## Accesso
+![postman_4](images/postman/postman_4.png)
+![postman_5](images/postman/postman_5.png)
+## Spese
+![postman_6](images/postman/postman_6.png)
+![postman_7](images/postman/postman_7.png)
+![postman_8](images/postman/postman_8.png)
+# Entrate
+![postman_9](images/postman/postman_9.png)
+![postman_10](images/postman/postman_10.png)
+![postman_11](images/postman/postman_11.png)
+## Statistiche
+![postman_12_statistiche](images/postman/postman_12_statistiche.png)
+## Uscita
+![postman_13](images/postman/postman_13.png)
