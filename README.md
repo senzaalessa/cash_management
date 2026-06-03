@@ -19,9 +19,9 @@ Il progetto consiste nella realizzazione di un web service per la gestione delle
 - ✅ Riepiloghi e report
 - ✅ Interfaccia web intuitiva
 ## 📂 Struttura del sistema
-![struttura](images/struttura.png)
+![struttura](images/progettazione/struttura.png)
 ## 🛠️ Endpoints
-![endpoints](images/endpoints.png)
+![endpoints](images/progettazione/endpoints.png)
 ## 💾 Installazione
 Dopo aver scaricato il sistema, configurato il database e il server web, il sistema può essere
 eseguito tramite browser.
@@ -37,16 +37,16 @@ A questo punto l’utente può:
 - Modificare e eliminare le spese e le entrate
 - Visualizzare la cronologia e i riepiloghi
 ## 📸 Sistema avviato
-![registrazione](images/registrazione.png)
-![accesso](images/accesso.png)
-![dashboard](images/dashboard.png)
-![spese](images/spese.png)
-![entrate](images/entrate.png)
-![statistiche_1](images/statistiche_1.png)
-![statistiche_2](images/statistiche_2.png)
-![statistiche_3](images/statistiche_3.png)
-![statistiche_4](images/statistiche_4.png)
-![statistiche_5](images/statistiche_5.png)
-![uscita](images/uscita.png)
+![registrazione](images/sistema_avviato/registrazione.png)
+![accesso](images/sistema_avviato/accesso.png)
+![dashboard](images/sistema_avviato/dashboard.png)
+![spese](images/sistema_avviato/spese.png)
+![entrate](images/sistema_avviato/entrate.png)
+![statistiche_1](images/sistema_avviato/statistiche_1.png)
+![statistiche_2](images/sistema_avviato/statistiche_2.png)
+![statistiche_3](images/sistema_avviato/statistiche_3.png)
+![statistiche_4](images/sistema_avviato/statistiche_4.png)
+![statistiche_5](images/sistema_avviato/statistiche_5.png)
+![uscita](images/sistema_avviato/uscita.png)
 ## 📬 Test effettuati
 Abbiamo effettuato tutti i test con POSTMAN.
