@@ -50,3 +50,5 @@ A questo punto l’utente può:
 ![uscita](images/sistema_avviato/uscita.png)
 ## 📬 Test effettuati
 Abbiamo effettuato tutti i test con POSTMAN.
+## Configurazione
+![postman_1](images/postman/postman_1.png)
