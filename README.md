@@ -19,7 +19,7 @@ Il progetto consiste nella realizzazione di un web service per la gestione delle
 - ✅ Riepiloghi e report
 - ✅ Interfaccia web intuitiva
 ## 📂 Struttura del sistema
-![struttura](images/progettazione/struttura.png)
+
 ## 🛠️ Endpoints
 ![endpoints](images/progettazione/endpoints.png)
 ## 💾 Installazione
