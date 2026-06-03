@@ -49,3 +49,4 @@ A questo punto l’utente può:
 ![statistiche_5](images/statistiche_5.png)
 ![uscita](images/uscita.png)
 ## 📬 Test effettuati
+Abbiamo effettuato tutti i test con POSTMAN.
